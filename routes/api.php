@@ -49,12 +49,17 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('category/store/notAssigned', 'CategoriesController@getCategoriesNotAssignedToStore');
         Route::post('category/store/add', 'CategoriesController@addCategoryToMyStore');
         Route::delete('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
+        
+        Route::post('order/status', 'OrdersController@changeOrderStatus');
     });
     // end store only routes
 
     // start common routes for store & admin & user
     Route::group(['middleware' => ['authenticate']], function () {
 
+        Route::post('me', 'AuthController@me');
+
+        
         Route::get('store/details', 'StoresController@getDetailsById');
         Route::get('store', 'StoresController@get');
 
@@ -74,7 +79,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::group(['middleware' => ['authenticate:client,store']], function () {
 
         Route::get('order/myOrders', 'OrdersController@getMyOrders');
-        Route::get('order/status', 'OrdersController@changeOrderStatus');
+        
     });
 
     Route::get('product/{id}', 'ProductsController@getById');
@@ -134,7 +139,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         // Route::get('auth/{provider}/callback', 'AuthController@handleProviderCallback');
 
         Route::group(['middleware' => ['authenticate']], function () {
-            Route::post('me', 'AuthController@me');
             // Route::get('user', 'UsersController@get');
             Route::get('user/view_profile', 'UsersController@viewProfile');
             Route::post('user/update', 'UsersController@update');

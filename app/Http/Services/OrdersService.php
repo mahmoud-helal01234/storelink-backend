@@ -535,8 +535,11 @@ class OrdersService
     public function changeOrderStatus($request)
     {
 
+        
         $order = $this->getById($request['order_id']);
-
+        if($this->getLoggedInUserStoreId() != $order->store_id)
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
+    
         $order->update(['status' => $request['status']]);
 
         // send notification to all related users

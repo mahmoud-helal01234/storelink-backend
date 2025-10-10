@@ -32,7 +32,13 @@ class AuthService
     public function me()
     {
 
-        return $this->getLoggedInUser();
+        $user = $this->getLoggedInUser();
+        if($this->isLoggedInUserStore()){
+            $user->store;
+        }elseif($this->isLoggedInUserClient()){
+            $user->client;
+        }
+        return $user;
     }
     public function socialLogin() {}
 

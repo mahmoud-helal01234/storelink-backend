@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Users;
+namespace App\Http\Controllers;
 
 use App\Http\Traits\LoggedInUserTrait;
 use App\Models\User;
@@ -31,6 +31,14 @@ class AuthController extends Controller
     {
 
         $this->authService = new AuthService();
+    }
+
+    public function me()
+    {
+
+
+        $user = $this->authService->me();
+        return $this->apiResponse($user);
     }
 
     public function socialLogin(Request $request)
@@ -115,13 +123,7 @@ class AuthController extends Controller
         return $this->apiResponse($LoggedInUser,true,__('success.login'));
     }
 
-    public function me()
-    {
-
-
-        $user = $this->authService->me();
-        return $this->apiResponse($user);
-    }
+    
 
     public function clientLogin(ClientLoginRequest $request)
     {

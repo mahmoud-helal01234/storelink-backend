@@ -12,7 +12,6 @@ class ChangeOrderStatusRequest extends FormRequest
 
     use ResponsesTrait;
 
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -36,7 +35,6 @@ class ChangeOrderStatusRequest extends FormRequest
             'order_id'      =>  'required|exists:orders,id',
             'status'  =>  'required|in:pending,processing,in_delivery,delivered,canceled,returned'
         ];
-
 
     }
 
