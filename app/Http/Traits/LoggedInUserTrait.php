@@ -53,4 +53,10 @@ use ResponsesTrait;
         return $loggedInUser->role == "client";
     }
 
+    public function isLoggedInUserAdmin(){
+
+        $loggedInUser = $this->getLoggedInUser();
+        return $loggedInUser->role == "admin";
+    }
+
 }

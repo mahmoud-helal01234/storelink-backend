@@ -1004,19 +1004,16 @@ class OrdersService
     }
 
     public function get(
-        $statuses = null,
+        $status = null,
         $clientId = null,
-        $deliveryDriverId = null,
-        $pickupDriverId = null,
-        $from = null,
-        $to = null,
+        $storeId = null,
     ) {
 
         $loggedInUser = $this->getLoggedInUser();
         $orders = Order::when(
-            $statuses != null,
-            function ($query) use ($statuses) {
-                $query->whereIn('status', $statuses);
+            $status != null,
+            function ($query) use ($status) {
+                $query->where('status', $status);
             }
         );
 
@@ -1028,48 +1025,22 @@ class OrdersService
         );
 
         $orders = $orders->when(
-            $deliveryDriverId != null,
-            function ($query) use ($deliveryDriverId) {
-                $query->where('delivery_driver_id', $deliveryDriverId);
+            $storeId != null,
+            function ($query) use ($storeId) {
+                $query->where('store_id', $storeId);
             }
         );
 
-        $orders = $orders->when(
-            $pickupDriverId != null,
-            function ($query) use ($pickupDriverId) {
-                $query->where('pickup_driver_id', $pickupDriverId);
-            }
-        );
-
-        $orders = $orders->when(
-            $from != null,
-            function ($query) use ($from) {
-                $query->where('created_at', '>=', $from);
-            }
-        );
-
-        $orders = $orders->when(
-            $to != null,
-            function ($query) use ($to) {
-                $query->where('created_at', '<=', $to);
-            }
-        );
-
-        if ($loggedInUser->role == "admin" || $loggedInUser->role == "customer_service") {
-        } else if ($loggedInUser == "driver") {
-        } else if ($loggedInUser == "client") {
-        }
+       
 
         $orders->with(
             [
                 'promoCode',
-                'location',
                 'client',
-                'items',
-                'pickupDriver:id,name,email',
-                'deliveryDriver:id,name,email',
+                'items.product',
+                'store'
             ]
-        );
+        )->where('status', '!=', 'in_cart');
 
         return $orders->orderBy('id', 'DESC')->get();
     }
@@ -1090,6 +1061,7 @@ class OrdersService
 
         return $orders->orderBy('id', 'DESC')->get();
     }
+
     public function getOrderBasedonRole($orders, $loggedInUser)
     {
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Services;
 
+use App\Models\User;
 use App\Models\Client;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
@@ -112,16 +113,28 @@ class ClientsService
         return $client;
     }
 
-    public function get($countryId = null)
+    public function get()
     {
 
-        $clients = Client::with('country')->when($countryId != null, function ($query) use ($countryId){
-
-            $query->where("country_id",$countryId);
-        })->get();
+        $clients = User::with('client')->where('role','client')->get();
 
         return $clients;
     }
+
+    public function toggleActivation($request)
+    {
+
+        $client = $this->getById($request->client_id);
+        try {
+
+            $client->update(['active' => $request->status]);
+
+        } catch (\Exception $ex) {
+
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
+        }
+    }
+
     public function viewProfile()
     {
         $loggedInUser = $this->getLoggedInUser();
@@ -168,19 +181,7 @@ class ClientsService
         }
     }
 
-    public function toggleActivation($id, $activationStatus)
-    {
-
-        $client = $this->getById($id);
-        try {
-
-            $client->update(['active' => $activationStatus]);
-
-        } catch (\Exception $ex) {
-
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
-        }
-    }
+    
 
 
 }

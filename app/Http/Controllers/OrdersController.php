@@ -33,6 +33,13 @@ class OrdersController extends Controller
         $this->ordersService = new OrdersService();
     }
 
+    public function get()
+    {
+
+        $orders = $this->ordersService->get(status: request('status'),storeId: request('store_id'), clientId: request('client_id'));
+        return $this->apiResponse($orders);
+    }
+
     public function getMyOrders()
     {
 
@@ -88,13 +95,6 @@ class OrdersController extends Controller
         return $this->apiResponse();
     }
 
-
-    public function get()
-    {
-
-        $orders = $this->clientOrdersService->get(statuses :request('statuses'),whereNotStatus:request('not_status'), companyId: request('company_id') , clientId:request('client_id'), from :request('from') , to : request('to'));
-        return $this->apiResponse($orders);
-    }
 
     public function getWorkingOn()
     {

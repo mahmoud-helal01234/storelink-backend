@@ -17,11 +17,22 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('client/login', 'ClientsController@login');
     Route::post('client/register', 'ClientsController@register');
 
-    Route::get('category', 'CategoriesController@get');
-    Route::post('category', 'CategoriesController@create');
-    Route::post('category/update', 'CategoriesController@update');
-    Route::delete('category/{id}', 'CategoriesController@delete');
-    
+    Route::group(['middleware' => ['authenticate:admin']], function () {
+
+        Route::get('client', 'ClientsController@get');
+        Route::post('user/toggleActivation', 'UsersController@toggleActivation');
+        Route::delete('review/{id}', 'ReviewsController@delete');
+        Route::get('order', 'OrdersController@get');
+
+        
+        Route::get('category', 'CategoriesController@get');
+        Route::post('category', 'CategoriesController@create');
+        Route::post('category/update', 'CategoriesController@update');
+        Route::delete('category/{id}', 'CategoriesController@delete');
+    });
+
+
+
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
 
@@ -33,15 +44,14 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('product', 'ProductsController@get');
         Route::post('product', 'ProductsController@create');
         Route::post('product/update', 'ProductsController@update');
-        Route::delete('product/{id}', 'ProductsController@delete');    
-        
+        Route::delete('product/{id}', 'ProductsController@delete');
+
         Route::get('category/store/notAssigned', 'CategoriesController@getCategoriesNotAssignedToStore');
         Route::post('category/store/add', 'CategoriesController@addCategoryToMyStore');
         Route::delete('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
-
     });
     // end store only routes
-    
+
     // start common routes for store & admin & user
     Route::group(['middleware' => ['authenticate']], function () {
 
@@ -59,16 +69,14 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('order/review', 'OrdersController@reviewOrder');
         Route::post('order/checkout', 'OrdersController@checkOut');
         Route::get('cartDetails', 'OrdersController@getCartDetails');
-
     });
 
     Route::group(['middleware' => ['authenticate:client,store']], function () {
 
         Route::get('order/myOrders', 'OrdersController@getMyOrders');
         Route::get('order/status', 'OrdersController@changeOrderStatus');
-
     });
-    
+
     Route::get('product/{id}', 'ProductsController@getById');
 
 
@@ -81,12 +89,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         // Route::post('/import-products','ProductsController@import');
         // Route::post('/upload-images', 'ProductsController@uploadImages');
         Route::get('option', 'OptionsController@get');
-
-
     });
     Route::group(['namespace' => 'Offers'], function () {
         Route::get('promo_code/code/{code}', 'PromoCodesController@getByCode');
-
     });
 
     Route::get('create-channel', 'TestNotificationsController@createChannel');
@@ -162,7 +167,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
         Route::group(['middleware' => ['authenticate:admin']], function () {
 
-            Route::get('client', 'ClientsController@get');
             Route::post('client', 'ClientsController@create');
             Route::post('client/update', 'ClientsController@update');
             Route::delete('client/{id}', 'ClientsController@delete');
@@ -225,16 +229,15 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     });
 
     Route::group(['namespace' => 'Orders'], function () {
-        
+
         Route::post('order/client', 'OrdersController@createForClient');
 
         Route::get('region', 'RegionsController@get');
 
         Route::group(['middleware' => ['authenticate:client']], function () {
 
-            
-            Route::get('order/client', 'OrdersController@getForClient');
 
+            Route::get('order/client', 'OrdersController@getForClient');
         });
 
         Route::group(['middleware' => ['authenticate:admin']], function () {
@@ -244,7 +247,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('company/deliver_to/city', 'CompaniesDeliverToCitiesController@addCompanyDeliverToCityRelation');
             Route::delete('company/deliver_to/city/{id}', 'CompaniesDeliverToCitiesController@deleteCompanyDeliverToCityRelation');
 
-            Route::get('order', 'OrdersController@get');
             Route::get('order_statuses', 'OrdersController@getStatuses');
 
             Route::post('client_order', 'ClientOrdersController@create');
@@ -322,7 +324,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
         Route::group(['middleware' => ['authenticate:admin,driver,customer_service']], function () {
 
-            Route::get('order', 'OrdersController@get');
 
 
             Route::get('order/{id}/status/{status}', 'OrdersController@changeOrderStatus');
@@ -393,8 +394,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('slider_offer', 'SliderOffersController@get');
         Route::get('promo_code_offer', 'PromoCodeOffersController@get');
         Route::get('promo_code/{id?}', 'PromoCodesController@get');
-        
-        
+
+
         Route::get('promo_code/select/{companyId}', 'PromoCodesController@selectPromoCodes');
 
 
@@ -534,14 +535,12 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
         Route::group(['middleware' => ['authenticate:admin,drivers_manager,company'], 'prefix' => 'drivers_app/'], function () {
 
-            Route::get('client', 'ClientsController@get');
             Route::post('client', 'ClientsController@create');
             Route::post('client/update', 'ClientsController@update');
             Route::delete('client/{id}', 'ClientsController@delete');
         });
 
-        Route::group(['middleware' => ['authenticate:admin,client']], function () {
-        });
+        Route::group(['middleware' => ['authenticate:admin,client']], function () {});
     });
 
     Route::group(['namespace' => 'PagesContent'], function () {
@@ -565,7 +564,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
             Route::post('review', 'ReviewsController@create');
             Route::post('review/update', 'ReviewsController@update');
-            Route::delete('review/{id}', 'ReviewsController@delete');
 
             Route::post('rule', 'RulesController@create');
             Route::post('rule/update', 'RulesController@update');
@@ -608,8 +606,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('home_page/update', 'HomePageContentController@update');
         });
 
-        Route::group(['middleware' => ['authenticate:admin,client']], function () {
-        });
+        Route::group(['middleware' => ['authenticate:admin,client']], function () {});
         Route::get('rule', 'RulesController@get');
         Route::get('social_link', 'SocialLinksController@get');
         Route::get('floating_social_link', 'FloatingSocialLinksController@get');

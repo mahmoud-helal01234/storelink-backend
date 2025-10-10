@@ -37,5 +37,10 @@ class Store extends Model
         return $this->hasMany(Order::class, 'store_id', 'id');
     }
 
+    public function promoCodes()
+    {
+        return $this->hasMany(PromoCode::class, 'store_id', 'user_id');
+    }
+
 
 }

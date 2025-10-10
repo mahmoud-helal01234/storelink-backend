@@ -88,6 +88,9 @@ class StoresService
                 $stores = $stores->whereRaw("{$haversine} <= ?", [$lat, $long, $lat, $distanceInMeters]);
             }
             $stores = $stores->get();
+        }else if($this->isLoggedInUserAdmin()) {
+            
+            $stores = Store::get();
         }
 
 
@@ -120,7 +123,6 @@ class StoresService
         $store->reviews =  Review::join('orders', 'reviews.order_id', '=', 'orders.id')
             ->join('clients', 'orders.client_id', '=', 'clients.user_id')
             ->where('orders.store_id', $storeId)
-            ->whereNull('orders.deleted_at')
             ->select([
                 'reviews.id',
                 'reviews.review',
@@ -152,6 +154,14 @@ class StoresService
                 }
                 $store->cart_order = $cartOrder;
             }
+        }else if($this->isLoggedInUserAdmin()) {
+            
+            $store = Store::where('user_id', $storeId)
+            ->with('categories.products','promoCodes')->first();
+            $ordersService = new OrdersService();
+            $store->orders = Order::with('items','review','client')->where('store_id', $storeId)
+                ->whereNot('status', 'in_cart')->get();
+
         }
         if ($store == null)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
