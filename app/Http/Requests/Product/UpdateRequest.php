@@ -13,7 +13,7 @@ class UpdateRequest extends FormRequest
 {
 
     use ResponsesTrait;
-    
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -44,9 +44,11 @@ class UpdateRequest extends FormRequest
 
         return [
 
-            'id'            => 'required|numeric',
-            'name'          =>  'required|string|max:100',
-            'description'   =>  'required|string|max:200',
+            'id'               => 'required|numeric',
+            'name_en'          =>  'required|string|max:100',
+            'name_ar'          =>  'required|string|max:100',
+            'description_en'   =>  'required|string|max:500',
+            'description_ar'   =>  'required|string|max:500',
             'category_id'   =>  "sometimes|numeric|exists:categories,id",
             'image'         =>  'sometimes|nullable|' . FormRequestRulesConstant::ImageValidation,
             'price'         =>  'required|numeric|min:0',

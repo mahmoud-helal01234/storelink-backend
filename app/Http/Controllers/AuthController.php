@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\LoggedInUserTrait;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\DeviceToken;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Traits\ResponsesTrait;
-
-
 use App\Http\Controllers\Controller;
+
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Services\Users\AuthService;
 use Laravel\Socialite\Facades\Socialite;
 use GuzzleHttp\Exception\ClientException;
+use App\Http\Requests\Auth\SendOTPRequest;
+use App\Http\Requests\Auth\VerifyOTPRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Client\ClientLoginRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
@@ -36,8 +38,14 @@ class AuthController extends Controller
     public function me()
     {
 
-
         $user = $this->authService->me();
+        return $this->apiResponse($user);
+    }
+
+    public function verifyOTP(VerifyOTPRequest $request)
+    {
+
+        $user = $this->authService->verifyOTP($request->validated());
         return $this->apiResponse($user);
     }
 
@@ -113,8 +121,6 @@ class AuthController extends Controller
         return $this->apiResponse(null,true,__('success.password_reset'));
     }
 
-
-
     public function login(LoginRequest $request)
     {
 
@@ -122,8 +128,6 @@ class AuthController extends Controller
         $LoggedInUser = $this->authService->login($user);
         return $this->apiResponse($LoggedInUser,true,__('success.login'));
     }
-
-    
 
     public function clientLogin(ClientLoginRequest $request)
     {
@@ -140,8 +144,24 @@ class AuthController extends Controller
         $CreatedUser = $this->authService->clientRegister($user);
 
         return $this->apiResponse($CreatedUser, true, __('success.login'));
+    }
 
+    public function resetPassword(ResetPasswordRequest $request)
+    {
 
+        $data = $request->validated();
+        $this->authService->resetPassword($data);
+
+        return $this->apiResponse(status: true,message: __('success.updated'));
+    }
+
+    public function forgetPassword(SendOTPRequest $request)
+    {
+
+        $user = $request->validated();
+        $CreatedUser = $this->authService->forgetPassword($user);
+
+        return $this->apiResponse($CreatedUser, true, __('success.otp_sent'));
     }
 
     public function logout()
@@ -153,8 +173,8 @@ class AuthController extends Controller
             // Delete the device token
             $deviceToken->delete();
         }
-
-        Auth::logout();
+        
+        Auth::guard('authenticate')->logout();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',

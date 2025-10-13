@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Traits\ResponsesTrait;
 
-class ResetPasswordRequest extends FormRequest
+class SendOTPRequest extends FormRequest
 {
     use ResponsesTrait;
 
@@ -31,19 +31,20 @@ class ResetPasswordRequest extends FormRequest
 
         return [
 
-            'password' => 'required|string|min:6',
+            'email' => 'required|string|email'
         ];
     }
 
-    public function messages() : array {
+    public function messages(): array
+    {
         return [
-            'password.required' => __('validation.password.required'),
-            'password.min' => __('validation.password.min', ['min' => 6])
+            'email.required' => __('validation.email.required')
         ];
     }
 
-    public function failedValidation(Validator $validator){
-        throw new HttpResponseException($this->apiResponse(null,false,$validator->errors()->first()));
+    public function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException($this->apiResponse(null, false, $validator->errors()->first()));
     }
     public function failedAuthorization()
     {

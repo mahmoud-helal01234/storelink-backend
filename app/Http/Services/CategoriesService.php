@@ -28,7 +28,7 @@ class CategoriesService
         return Category::query()
         ->whereDoesntHave('stores', function ($q) use ($storeId) {
             // either constrain by stores.id or by pivot store_id (both work)
-            $q->where('stores.id', $storeId);
+            $q->where('stores.user_id', $storeId);
             // or: $q->where('store_category.store_id', $storeId);
         })
         ->get();

@@ -1,0 +1,1799 @@
+{
+	"info": {
+		"_postman_id": "38d6c66e-68dd-45dd-ac40-2960b48efc1f",
+		"name": "StoreLink - App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "27803850",
+		"_collection_link": "https://www.postman.com/warped-crescent-660731/workspace/storelink/collection/27803850-38d6c66e-68dd-45dd-ac40-2960b48efc1f?action=share&source=collection_link&creator=27803850"
+	},
+	"item": [
+		{
+			"name": "admin",
+			"item": [
+				{
+					"name": "category",
+					"item": [
+						{
+							"name": "category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}category"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name_en",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "description_en",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "description_ar",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										}
+									]
+								},
+								"url": "{{url}}category"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name_en",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "description_en",
+											"value": "category 1",
+											"type": "text"
+										},
+										{
+											"key": "description_ar",
+											"value": "category 2",
+											"type": "text"
+										},
+										{
+											"key": "id",
+											"value": "50\n",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										}
+									]
+								},
+								"url": "{{url}}category/update"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "category 2",
+											"type": "text"
+										},
+										{
+											"key": "id",
+											"value": "48",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										}
+									]
+								},
+								"url": "{{url}}category/48"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Clients",
+					"item": [
+						{
+							"name": "get clients",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}client"
+							},
+							"response": []
+						},
+						{
+							"name": "activate / deactivate",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "user_id",
+											"value": "3",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}user/toggleActivation"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Stores",
+					"item": [
+						{
+							"name": "get stores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}store"
+							},
+							"response": []
+						},
+						{
+							"name": "get store details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}store/details?store_id=2",
+									"host": [
+										"{{url}}store"
+									],
+									"path": [
+										"details"
+									],
+									"query": [
+										{
+											"key": "store_id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove review",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name_ar",
+											"value": "فيسبوك",
+											"type": "text"
+										},
+										{
+											"key": "name_en",
+											"value": "facebook",
+											"type": "text"
+										},
+										{
+											"key": "title_en",
+											"value": "dsadsat",
+											"type": "text"
+										},
+										{
+											"key": "title_ar",
+											"value": "ex title",
+											"type": "text"
+										},
+										{
+											"key": "description_ar",
+											"value": "dsadsat",
+											"type": "text"
+										},
+										{
+											"key": "description_en",
+											"value": "ex title",
+											"type": "text"
+										},
+										{
+											"key": "active",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "id",
+											"value": "5",
+											"type": "text"
+										},
+										{
+											"key": "img_path",
+											"type": "file",
+											"src": "/C:/Users/msi/Downloads/ChatGPT Image May 1, 2025, 01_04_21 AM.png"
+										}
+									]
+								},
+								"url": "{{url}}review/9"
+							},
+							"response": []
+						},
+						{
+							"name": "activate / deactivate",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "user_id",
+											"value": "3",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}user/toggleActivation"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "get",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}order?status=&store_id=2&client_id=3",
+									"host": [
+										"{{url}}order"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "store_id",
+											"value": "2"
+										},
+										{
+											"key": "client_id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"admin@admin.com\",\r\n  \"password\": \"test\"\r\n\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}login"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": {
+					"token": "{{token}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "store app",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "phone",
+											"value": "2122321321",
+											"type": "text"
+										},
+										{
+											"key": "lat",
+											"value": "21.21",
+											"type": "text"
+										},
+										{
+											"key": "long",
+											"value": "21.22",
+											"type": "text"
+										},
+										{
+											"key": "address",
+											"value": "92 eltahreer st",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "ourstore@gmail.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "testtest",
+											"type": "text"
+										},
+										{
+											"key": "name_en",
+											"value": "Our Store",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "ستورنا",
+											"type": "text"
+										},
+										{
+											"key": "logo_image",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "cover_image",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "delivery_charge",
+											"value": "25",
+											"type": "text"
+										},
+										{
+											"key": "lat",
+											"value": "24.32",
+											"type": "text"
+										},
+										{
+											"key": "long",
+											"value": "21.21",
+											"type": "text"
+										},
+										{
+											"key": "first_phone_number",
+											"value": "0129321",
+											"type": "text"
+										},
+										{
+											"key": "second_phone_number",
+											"value": "0109213213",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_number",
+											"value": "010932120",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}store/register"
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"store@store.com\",\r\n    \"password\":\"testte\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}store/login"
+							},
+							"response": []
+						},
+						{
+							"name": "logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"client@gmail.com\",\r\n    \"password\":\"testtest\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}logout"
+							},
+							"response": []
+						},
+						{
+							"name": "me",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}store/me"
+							},
+							"response": []
+						},
+						{
+							"name": "Update profile",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "phone",
+											"value": "2122321321",
+											"type": "text"
+										},
+										{
+											"key": "lat",
+											"value": "21.21",
+											"type": "text"
+										},
+										{
+											"key": "long",
+											"value": "21.22",
+											"type": "text"
+										},
+										{
+											"key": "address",
+											"value": "92 eltahreer st",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "store@store.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "testtest",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "name_en",
+											"value": "Our Store1",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "ستورنا1",
+											"type": "text"
+										},
+										{
+											"key": "logo_image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										},
+										{
+											"key": "cover_image",
+											"type": "file",
+											"src": "/D:/yamavet-1024-500.jpg"
+										},
+										{
+											"key": "delivery_charge",
+											"value": "250",
+											"type": "text"
+										},
+										{
+											"key": "lat",
+											"value": "24.3201",
+											"type": "text"
+										},
+										{
+											"key": "long",
+											"value": "21.2101",
+											"type": "text"
+										},
+										{
+											"key": "first_phone_number",
+											"value": "012932111",
+											"type": "text"
+										},
+										{
+											"key": "second_phone_number",
+											"value": "01092132132",
+											"type": "text"
+										},
+										{
+											"key": "whatsapp_number",
+											"value": "0109321202",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}store/updateProfile"
+							},
+							"response": []
+						},
+						{
+							"name": "reset password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\":\"testte\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}resetPassword"
+							},
+							"response": []
+						},
+						{
+							"name": "send otp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"mahmoud.helal01234@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}sendOTP"
+							},
+							"response": []
+						},
+						{
+							"name": "forget password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}forget-password"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "promo code",
+					"item": [
+						{
+							"name": "get",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}promo_code"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "create",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"F67892\",\r\n    \"active\": 1,\r\n    \"discount_type\": \"percentage\",\r\n    \"value\": 40,\r\n    \"expiration_datetime\": \"2025-10-01 05:54:02\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}promo_code"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "update",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":1,\r\n    \"code\": \"F67899\",\r\n    \"discount_type\": \"constant\",\r\n    \"value\": 4,\r\n    \"expiration_datetime\": \"2025-10-02 06:54:02\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}promo_code/update"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						},
+						{
+							"name": "delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "name",
+											"value": "category 2",
+											"type": "text"
+										},
+										{
+											"key": "id",
+											"value": "48",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										}
+									]
+								},
+								"url": "{{url}}promo_code/1"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "product",
+					"item": [
+						{
+							"name": "get products",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}product?category_id=46",
+									"host": [
+										"{{url}}product"
+									],
+									"query": [
+										{
+											"key": "category_id",
+											"value": "46"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create product",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "category_id",
+											"value": "49",
+											"type": "text"
+										},
+										{
+											"key": "name_en",
+											"value": "شيلا",
+											"type": "text"
+										},
+										{
+											"key": "description_en",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "شيلا",
+											"type": "text"
+										},
+										{
+											"key": "description_ar",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "9",
+											"type": "text"
+										},
+										{
+											"key": "offer_price",
+											"value": "5",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										}
+									]
+								},
+								"url": "{{url}}product"
+							},
+							"response": []
+						},
+						{
+							"name": "update product",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "484",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "شيلا1",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "101",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "91",
+											"type": "text"
+										},
+										{
+											"key": "offer_price",
+											"value": "51",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}product/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete product",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}product/484"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "categories",
+					"item": [
+						{
+							"name": "get not assigned categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}category/store/notAssigned"
+							},
+							"response": []
+						},
+						{
+							"name": "assign category to my store",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "category_id",
+											"value": "49",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}category/store/add"
+							},
+							"response": []
+						},
+						{
+							"name": "remove category from my store",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "484",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "شيلا1",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "101",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "91",
+											"type": "text"
+										},
+										{
+											"key": "offer_price",
+											"value": "51",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}category/49/store/"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "orders",
+					"item": [
+						{
+							"name": "get my orders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}order/myOrders"
+							},
+							"response": []
+						},
+						{
+							"name": "change order status",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order_id\": 150,\r\n    \"status\": \"returned\" // 'in_cart', 'pending', 'processing', 'in_delivery', 'delivered', 'canceled', 'returned'\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/status"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "get store details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{url}}store/details"
+					},
+					"response": [
+						{
+							"name": "get store by id",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}store/1"
+							},
+							"_postman_previewlanguage": null,
+							"header": null,
+							"cookie": [],
+							"body": "title, logo, image, 1st phone number, 2nd phone number, whatstapp number, location details, lat, long, delivery_charge, distance, products (name, image, price), reviews (name, content, rate)."
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": {
+					"token": "{{storeToken}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "clients app",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"test\",\r\n    \"phone\":\"2132112\",\r\n    \"lat\":21.24,\r\n    \"long\":12.43,\r\n    \"address\":\"test\",\r\n    \"email\":\"client@gmail.com\",\r\n    \"password\":\"testtest\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}client/register"
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"client@gmail.com\",\r\n    \"password\":\"testtest\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}client/login"
+							},
+							"response": []
+						},
+						{
+							"name": "logout",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"client@gmail.com\",\r\n    \"password\":\"testtest\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}logout"
+							},
+							"response": []
+						},
+						{
+							"name": "update profile",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"test\",\r\n    \"phone\":\"2132112\",\r\n    \"lat\":21.24,\r\n    \"long\":12.43,\r\n    \"address\":\"test\",\r\n    \"email\":\"client@gmail.com\",\r\n    \"password\":\"testtest\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}client/updateProfile"
+							},
+							"response": []
+						},
+						{
+							"name": "me",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}client/me"
+							},
+							"response": []
+						},
+						{
+							"name": "reset password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\":\"testte\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}resetPassword"
+							},
+							"response": []
+						},
+						{
+							"name": "otp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"\",\r\n    \"code\":\"21321321\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}otp"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "order",
+					"item": [
+						{
+							"name": "add product to cart",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"product_id\": 484,\r\n    \"quantity\": 2\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/addProductToCart"
+							},
+							"response": []
+						},
+						{
+							"name": "get cart details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}cartDetails"
+							},
+							"response": []
+						},
+						{
+							"name": "apply promo code to order",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "ar",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"promo_code\": \"F67892\",\r\n    \"order_id\": 161\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/applyPromoCode"
+							},
+							"response": []
+						},
+						{
+							"name": "cancel promo code from order",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order_id\": 161\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/cancelPromoCode"
+							},
+							"response": []
+						},
+						{
+							"name": "checkout order",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order_id\": 151\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/checkout"
+							},
+							"response": []
+						},
+						{
+							"name": "get my orders",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order_id\": 151,\r\n    \"rating\":5,\r\n    \"review\":\"best store and service used ever!!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/myOrders"
+							},
+							"response": []
+						},
+						{
+							"name": "review order",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"order_id\": 151,\r\n    \"rating\":5,\r\n    \"review\":\"best store and service used ever!!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}order/review"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Notification",
+					"item": [
+						{
+							"name": "notifications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}notification"
+							},
+							"response": [
+								{
+									"name": "notifications",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}notification"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "{\r\n    title \r\n    content\r\n    store name, logo\r\n    created at\r\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "categories",
+					"item": [
+						{
+							"name": "category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{url}}category"
+							},
+							"response": [
+								{
+									"name": "category",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}category"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, image"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "store",
+					"item": [
+						{
+							"name": "stores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}store?category_id=49&rating=3&sort_by_rating=1&distance_in_meters=150",
+									"host": [
+										"{{url}}store"
+									],
+									"query": [
+										{
+											"key": "category_id",
+											"value": "49"
+										},
+										{
+											"key": "rating",
+											"value": "3"
+										},
+										{
+											"key": "sort_by_rating",
+											"value": "1"
+										},
+										{
+											"key": "distance_in_meters",
+											"value": "150"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "stores",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{url}}store?category[]=test&category[]=test2&category[]=test4&query=st&distance=2,rating=2",
+											"host": [
+												"{{url}}store"
+											],
+											"query": [
+												{
+													"key": "category[]",
+													"value": "test"
+												},
+												{
+													"key": "category[]",
+													"value": "test2"
+												},
+												{
+													"key": "category[]",
+													"value": "test4"
+												},
+												{
+													"key": "query",
+													"value": "st"
+												},
+												{
+													"key": "distance",
+													"value": "2,rating=2"
+												}
+											]
+										}
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, logo, distance in meters or kilometers, delivery charge, rating"
+								}
+							]
+						},
+						{
+							"name": "get store details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}store/details?store_id=2",
+									"host": [
+										"{{url}}store"
+									],
+									"path": [
+										"details"
+									],
+									"query": [
+										{
+											"key": "store_id",
+											"value": "2"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get store by id",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": "{{url}}store/1"
+									},
+									"_postman_previewlanguage": null,
+									"header": null,
+									"cookie": [],
+									"body": "title, logo, image, 1st phone number, 2nd phone number, whatstapp number, location details, lat, long, delivery_charge, distance, products (name, image, price), reviews (name, content, rate)."
+								}
+							]
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": {
+					"token": "{{clientToken}}"
+				}
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:8000/api/"
+		},
+		{
+			"key": "apiToken",
+			"value": "aquacare212"
+		},
+		{
+			"key": "token",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzYwMDM0NTg4LCJuYmYiOjE3NjAwMzQ1ODgsImp0aSI6ImxVeUVjeGFzdU9sdU9DVmYiLCJzdWIiOiIxIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.gZYInr8OW4nvQ9NU9Um7CSD9WU1hkCcWUaDpQdAJgZw"
+		},
+		{
+			"key": "storeToken",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2xvZ2luIiwiaWF0IjoxNzU5Mjg3Njk5LCJuYmYiOjE3NTkyODc2OTksImp0aSI6ImM0MW55TkZTUXowTlhNZW0iLCJzdWIiOiIyIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.P5Zz9uGJyGBFm0g1hzA2BMBZGsp5AgrOZfmb2EsbH-4"
+		},
+		{
+			"key": "clientToken",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBpL2NsaWVudC9sb2dpbiIsImlhdCI6MTc2MDM1NzU1NSwibmJmIjoxNzYwMzU3NTU1LCJqdGkiOiI4QnVvblZtWnBjZWNQOE55Iiwic3ViIjoiMTIiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.HhPNzl6eixlSvzs-gmnJ-GGfyS_OKFbci4pSdjYUZKs"
+		}
+	]
+}

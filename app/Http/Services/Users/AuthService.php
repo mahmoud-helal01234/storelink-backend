@@ -3,6 +3,7 @@
 namespace App\Http\Services\Users;
 
 use App\Models\User;
+use App\Mail\OTPMail;
 use App\Models\Client;
 use Illuminate\Support\Str;
 use App\Models\UserPasswordReset;
@@ -15,12 +16,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ResetPasswordTokenEmail;
-use Illuminate\Support\Facades\Config;
-use App\Http\Resources\Auth\ClientLoginResource;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Models\DriversApp\UserDeviceToken;
+use App\Http\Resources\Auth\ClientLoginResource;
+use App\Models\ConfirmationCode;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
+use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -33,13 +34,74 @@ class AuthService
     {
 
         $user = $this->getLoggedInUser();
-        if($this->isLoggedInUserStore()){
+        if( $this->isLoggedInUserStore()){
             $user->store;
-        }elseif($this->isLoggedInUserClient()){
+        } elseif($this->isLoggedInUserClient()){
             $user->client;
         }
         return $user;
     }
+
+    public function resetPassword($request)
+    {
+
+        $userId = $this->getLoggedInUser()->id;
+        $user = User::find($userId);
+        $user->password = $request['password']; 
+        $user->save();
+        return;
+    }
+
+    public function verifyOTP($request){
+        DB::beginTransaction();
+        $email = $request['email'];
+        $otp = $request['otp'];
+        $ConfirmationCode = ConfirmationCode::where(['email' => $email, 'code' => $otp, 'active' => 1])->get()->first();
+        if($ConfirmationCode == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('invalid otp')));
+        }
+        if($ConfirmationCode->created_at->addMinutes(5)->isPast()){
+            throw new HttpResponseException($this->apiResponse(null, false, __('otp expired')));
+        }   
+
+        $ConfirmationCode->active = 0;
+        $ConfirmationCode->save();
+        $user = User::where('email', $email)->first();
+        $user->is_verified = 1;
+        $user->save();
+        if($user == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+        $token = JWTAuth::fromUser($user);
+        $user['token'] = $token;
+        DB::commit();
+    
+        return $user;
+            
+    }
+
+    public function sendOTP($email){
+        $otp = rand(100000, 999999);
+        ConfirmationCode::updateOrCreate(
+            ['email' => $email],
+            ['code' => $otp,'active' => 1, 'created_at' => now()]
+        );
+        
+        Mail::to($email)
+            ->send(new OTPMail($otp));
+            
+    }
+
+    public function forgetPassword($request){
+        
+        if(User::where('email', $request['email'])->first() == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+        $this->sendOTP($request['email']);
+        return;
+            
+    }
+
     public function socialLogin() {}
 
     public function clientLogin($user)
@@ -91,21 +153,6 @@ class AuthService
             Mail::to($email)->send(new ResetPasswordTokenEmail($token));
         }
     }
-
-    public function resetPasswordUsers($data)
-    {
-
-        $email = $data['email'];
-        $userPasswordReset = UserPasswordReset::where(["token" => $data['token']])->whereHas('user', function ($q) use ($email) {
-            $q->where('email', $email);
-        })->first();
-
-        if ($userPasswordReset == null)
-            throw new HttpResponseException($this->apiResponse(null, false, __("auth.failed")));
-        User::where('id', $userPasswordReset->user_id)->update(['password' => Hash::make($data['password'])]);
-        $userPasswordReset->delete();
-    }
-
 
     public function sendPasswordResetTokenClients($email)
     {

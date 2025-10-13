@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Traits\FileUploadTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Store extends Model
 {
     use HasFactory;
-
+    use FileUploadTrait;
     protected $primaryKey = 'user_id';
 
     protected $hidden = [ 'deleted_at'];
@@ -34,7 +35,7 @@ class Store extends Model
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'store_id', 'id');
+        return $this->hasMany(Order::class, 'store_id', 'user_id');
     }
 
     public function promoCodes()
@@ -42,5 +43,10 @@ class Store extends Model
         return $this->hasMany(PromoCode::class, 'store_id', 'user_id');
     }
 
+    public function user()
+    {
+
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 
 }

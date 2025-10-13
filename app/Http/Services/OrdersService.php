@@ -64,20 +64,22 @@ class OrdersService
             return $orders;
         }
     }
+    
     public function getCartDetails()
     {
         $order = Order::with(
             ['items.product', 'store', 'client', 'promoCode']
         )->where('status', 'in_cart')->where('client_id', $this->getLoggedInUserClientId())->first();
-
-        // validate promo code if expired remove it
-        if ($order->promoCode != null && Carbon::parse($order->promoCode->expiration_datetime)->lt(now())) {
-            $order->promo_code_id = null;
-            $order->save();
+        
+        if($order != null ){
+            // validate promo code if expired remove it
+            if ( $order->promoCode != null && Carbon::parse($order->promoCode->expiration_datetime)->lt(now())) {
+                $order->promo_code_id = null;
+                $order->save();
+            }
+            
+            $order = $this->calculateCartOrderPrices($order);
         }
-
-        $order = $this->calculateCartOrderPrices($order);
-
         return $order;
     }
 

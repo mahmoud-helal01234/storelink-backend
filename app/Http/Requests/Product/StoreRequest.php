@@ -58,12 +58,22 @@ class StoreRequest extends FormRequest
     {
 
         return [
-            'name.required'         => __('validation.name.required'),
-            'description.required'  => __('validation.description.required'),
-            'category_id.required'  => __('validation.category_id.required'),
-            'category_id.exists'    => __('validation.category_id.exists'),
-            'image.required'        => __('validation.image.required'),
-
+            'name_ar.required'         => __('validation.name.required')
+            , 'name_en.required'       => __('validation.name.required')
+            , 'description_ar.required' => __('validation.description.required')
+            , 'description_en.required' => __('validation.description.required')
+            , 'category_id.required'    => __('validation.category.required')
+            , 'category_id.exists'      => __('validation.category.exists')
+            , 'image.required'          => __('validation.image.required')
+            , 'image.image'             => __('validation.image.image')
+            , 'image.mimes'             => __('validation.image.mimes')
+            , 'image.max'               => __('validation.image.max')
+            , 'price.required'          => __('validation.price.required')
+            , 'price.numeric'           => __('validation.price.numeric')
+            , 'price.min'               => __('validation.price.min')
+            , 'offer_price.numeric'     => __('validation.offer_price.numeric')
+            , 'offer_price.min'         => __('validation.offer_price.min')
+            
         ];
     }
 

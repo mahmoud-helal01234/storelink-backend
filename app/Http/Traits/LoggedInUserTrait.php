@@ -21,11 +21,7 @@ use ResponsesTrait;
     public function getLoggedInUser(){
 
         $loggedInUser = Auth::guard('authenticate')->user();
-        if(!$loggedInUser){
-            $loggedInUser = Auth::guard('authenticate-clients')->user();
-            if($loggedInUser)
-                $loggedInUser->role = "client";
-        }
+    
         return $loggedInUser;
     }
 

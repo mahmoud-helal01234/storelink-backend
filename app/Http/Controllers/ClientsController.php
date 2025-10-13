@@ -19,6 +19,7 @@ use App\Http\Requests\Client\UpdateProfileRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
 use App\Http\Requests\Client\ForgetPasswordRequest;
 use App\Http\Requests\Client\ToggleActivationRequest;
+use App\Http\Requests\Client\UpdateClientProfileRequest;
 
 class ClientsController extends Controller
 {
@@ -30,6 +31,14 @@ class ClientsController extends Controller
 
         $this->clientsService = new ClientsService();
     }
+
+    public function me()
+    {
+
+        $client = $this->clientsService->me();
+        return $this->apiResponse($client);
+    }
+
 
     public function get()
     {
@@ -55,6 +64,8 @@ class ClientsController extends Controller
 
         return $this->apiResponse($CreatedUser, true, __('success.login'));
     }
+
+
     public function selectClientsByCompany($companyId)
     {
 
@@ -67,14 +78,16 @@ class ClientsController extends Controller
 
         return $this->apiResponse($client);
     }
-    public function updateProfile(UpdateProfileRequest $request)
+
+    public function updateProfile(UpdateClientProfileRequest $request)
     {
 
         $client = $request->validated();
         $this->clientsService->updateProfile($client);
 
-        return $this->apiResponse();
+        return $this->apiResponse(status: true,message: __('success.updated'));
     }
+    
 
     public function forgetPassword(ForgetPasswordRequest $request)
     {

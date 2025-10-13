@@ -13,9 +13,18 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], function () {
+    
+    Route::post('login', 'AuthController@login'); // dashboard
 
     Route::post('client/login', 'ClientsController@login');
     Route::post('client/register', 'ClientsController@register');
+
+    
+    Route::post('store/register', 'StoresController@register');
+    Route::post('store/login', 'StoresController@login');
+
+    Route::post('forgetPassword', 'AuthController@forgetPassword'); 
+    Route::post('verifyOTP', 'AuthController@verifyOTP'); 
 
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
@@ -24,8 +33,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::delete('review/{id}', 'ReviewsController@delete');
         Route::get('order', 'OrdersController@get');
 
-        
-        Route::get('category', 'CategoriesController@get');
         Route::post('category', 'CategoriesController@create');
         Route::post('category/update', 'CategoriesController@update');
         Route::delete('category/{id}', 'CategoriesController@delete');
@@ -36,10 +43,13 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
 
-        Route::get('promo_code', 'PromocodesController@get');
-        Route::post('promo_code', 'PromocodesController@create');
-        Route::post('promo_code/update', 'PromocodesController@update');
-        Route::delete('promo_code/{id}', 'PromocodesController@delete');
+        Route::post('store/me', 'StoresController@me');
+        Route::post('store/updateProfile', 'StoresController@updateProfile');
+
+        Route::get('promo_code', 'PromoCodesController@get');
+        Route::post('promo_code', 'PromoCodesController@create');
+        Route::post('promo_code/update', 'PromoCodesController@update');
+        Route::delete('promo_code/{id}', 'PromoCodesController@delete');
 
         Route::get('product', 'ProductsController@get');
         Route::post('product', 'ProductsController@create');
@@ -57,9 +67,13 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     // start common routes for store & admin & user
     Route::group(['middleware' => ['authenticate']], function () {
 
-        Route::post('me', 'AuthController@me');
 
-        
+        Route::post('resetPassword', 'AuthController@resetPassword');
+
+        Route::post('logout', 'AuthController@logout');
+
+        Route::get('category', 'CategoriesController@get');
+
         Route::get('store/details', 'StoresController@getDetailsById');
         Route::get('store', 'StoresController@get');
 
@@ -67,6 +81,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
     // start client only routes 
     Route::group(['middleware' => ['authenticate:client']], function () {
+
+        Route::post('client/me', 'ClientsController@me');
+        Route::post('client/updateProfile', 'ClientsController@updateProfile');
 
         Route::post('order/addProductToCart', 'OrdersController@addProductToCart');
         Route::post('order/applyPromoCode', 'OrdersController@applyPromoCode');
@@ -152,9 +169,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('company_rate', 'CompaniesController@getCompanyRates');
 
 
-        Route::get('logout', 'AuthController@logout');
         Route::post('refresh', 'AuthController@refresh');
-        Route::post('login', 'AuthController@login'); // dashboard
+         // dashboard
 
         // done and tested
 

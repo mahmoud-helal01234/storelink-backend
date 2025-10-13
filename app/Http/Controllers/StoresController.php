@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Traits\ResponsesTrait;
-use App\Http\Traits\FileUploadTrait;
-use App\Http\Services\StoresService;
 use App\Http\Controllers\Controller;
+use App\Http\Services\StoresService;
+use App\Http\Traits\FileUploadTrait;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Client\StoreRegisterRequest;
+use App\Http\Requests\Store\UpdateStoreProfileRequest;
 
 class StoresController extends Controller
 {
@@ -18,9 +21,42 @@ class StoresController extends Controller
     {
 
         $this->storesService = new StoresService();
+    }
 
+    public function me()
+    {
+
+        $client = $this->storesService->me();
+        return $this->apiResponse($client);
     }
     
+    public function updateProfile(UpdateStoreProfileRequest $request)
+    {
+
+        $store = $request->validated();
+        $this->storesService->updateProfile($store);
+
+        return $this->apiResponse(status: true,message: __('success.updated'));
+    }
+    
+
+    public function login(LoginRequest $request)
+    {
+
+        $user = $request->validated();
+        $LoggedInUser = $this->storesService->login($user);
+        return $this->apiResponse($LoggedInUser,true,__('success.login'));
+    }
+    
+    public function register(StoreRegisterRequest $request)
+    {
+
+        $user = $request->validated();
+        $CreatedUser = $this->storesService->register($user);
+
+        return $this->apiResponse($CreatedUser, true, __('success.login'));
+    }
+
     public function get()
     {
 

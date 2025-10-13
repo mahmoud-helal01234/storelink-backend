@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Client;
+namespace App\Http\Requests\Store;
 
-use Illuminate\Validation\Rule;
 use App\Http\Traits\ResponsesTrait;
+use App\Http\Traits\LoggedInUserTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use App\Http\Constants\FormRequestRulesConstant;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ClientRegisterRequest extends FormRequest
+class UpdateStoreProfileRequest extends FormRequest
 {
     use ResponsesTrait;
-
+    use LoggedInUserTrait;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -31,13 +32,19 @@ class ClientRegisterRequest extends FormRequest
     {
 
         return [
-            'name'          => 'required|string|max:100',
-            'address'       => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users',
-            'phone'         => 'required|string|max:255|unique:clients',
-            'password'      => 'required|string|min:6',
-            'lat'           => 'required|numeric',
-            'long'          => 'required|numeric',
+            'email'                 => 'required|string|email|max:255|unique:users,email,' . $this->getLoggedInUserStoreId(),
+            'password'              => 'sometimes|string|min:6',
+            'lat'                   => 'required|numeric',
+            'long'                  => 'required|numeric',
+            'logo_image'            =>  'sometimes|' . FormRequestRulesConstant::ImageValidation,
+            'cover_image'           =>  'sometimes|' . FormRequestRulesConstant::ImageValidation,
+            'address'               => 'required|string|max:255',
+            'name_en'               => 'required|string|max:100',
+            'name_ar'               => 'required|string|max:100',
+            'delivery_charge'       => 'required|string|max:100',
+            'first_phone_number'    => 'required|string|max:13',
+            'second_phone_number'   => 'required|string|max:13',
+            'whatsapp_number'       => 'required|string|max:13'
         ];
     }
 

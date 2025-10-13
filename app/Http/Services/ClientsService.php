@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\User;
 use App\Models\Client;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Log;
 use App\Http\Traits\ArraySliceTrait;
@@ -20,8 +21,19 @@ class ClientsService
 
     use FileUploadTrait;
     use ArraySliceTrait;
-    use LoggedInUserTrait;   
+    use LoggedInUserTrait;
 
+    public function me()
+    {
+
+        $user = $this->getLoggedInUser();
+        if (!$this->isLoggedInUserClient()) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
+        }
+
+        $user->client;
+        return $user;
+    }
 
     public function getClientIdByUserId($userId)
     {
@@ -29,12 +41,12 @@ class ClientsService
         Log::info("start get stores");
 
         $client = Client::where('user_id', $userId)->
-        // with('')
-        // ->when($storeId != null,
-        // function ($query) use($storeId){
-        //     return $query->where('store_id',$storeId);
-        // })->
-        get()->first();
+            // with('')
+            // ->when($storeId != null,
+            // function ($query) use($storeId){
+            //     return $query->where('store_id',$storeId);
+            // })->
+            get()->first();
         return $client->id;
     }
 
@@ -42,52 +54,93 @@ class ClientsService
     public function login($user)
     {
 
-        // Config::set('jwt.user', 'App\Models\Client');
-        // Config::set('auth.providers.clients.model', \App\Models\Client::class);
-
+        // Config::set('jwt.user', 'App\Models\User');
+        // Config::set('auth.providers.users.model', \App\Models\User::class);
         $credentials = $this->array_slice_assoc($user, ['email', 'password']);
 
-        $token = Auth::guard('authenticate-clients')->attempt($credentials);
+        $token = Auth::guard('authenticate')->attempt($credentials);
 
-        if (!$token) {
+        if (!$token || !$this->isLoggedInUserClient()) {
 
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.failed.failed')));
+            throw new HttpResponseException($this->apiResponse(null, false, __('wrong email or password')));
         }
-        $user = Auth::guard('authenticate-clients')->user();
-        $user['token'] = $token;
-        return $user;
-        // return ClientLoginResource::make($user);
+
+        $authUser = Auth::guard('authenticate')->user();
+        if (isset($user['device_token']) &&  $user['device_token'] != null) {
+            UserDeviceToken::create([
+
+                'user_id' => $authUser->id,
+                'device_token' => $user['device_token'],
+            ]);
+        }
+        $authUser['token'] = $token;
+        return $authUser;
     }
 
-    public function register($client)
+
+    public function register($request)
     {
 
         // Config::set('jwt.user', 'App\Models\User');
         // Config::set('auth.providers.users.model', \App\Models\User::class);
 
-        $password = $client['password'];
+        DB::beginTransaction();
+        // 1- create user
+        $user = $this->array_slice_assoc($request, ['email', 'password']);
+        $user['role'] = 'client';
+        $user['active'] = 1;
+
+        $user = User::create($user);
+
+        // 2- create client with user_id
+        $client = $this->array_slice_assoc($request, ['name', 'address', 'lat', 'long', 'phone']);
+        $client['user_id'] = $user->id;
         $createdClient = Client::create($client);
 
-        $credentials =  ['email' => $client['email'], 'password' => $password];
+        // 3- create token for user
+        $credentials =  ['email' => $user['email'], 'password' => $user['password']];
         // $token = Auth::guard('authenticate-clients')->attempt($credentials);
-        $token = JWTAuth::fromUser($createdClient);
+        $token = JWTAuth::fromUser($user);
         // $token = Auth::guard('authenticate-clients')->attempt($credentials);
-        $createdClient['token'] = $token;
 
-        return ClientLoginResource::make($createdClient);
+        DB::commit();
+        $user->token = $token;
+        $user->phone = $createdClient->phone;
+        return ClientLoginResource::make($user);
     }
-    
-    public function updateProfile($newClient)
+
+    // public function register($client)
+    // {
+
+    //     // Config::set('jwt.user', 'App\Models\User');
+    //     // Config::set('auth.providers.users.model', \App\Models\User::class);
+
+    //     $password = $client['password'];
+    //     $createdClient = Client::create($client);
+
+    //     $credentials =  ['email' => $client['email'], 'password' => $password];
+    //     // $token = Auth::guard('authenticate-clients')->attempt($credentials);
+    //     $token = JWTAuth::fromUser($createdClient);
+    //     // $token = Auth::guard('authenticate-clients')->attempt($credentials);
+    //     $createdClient['token'] = $token;
+
+    //     return ClientLoginResource::make($createdClient);
+    // }
+
+    public function updateProfile($request)
     {
 
-        // Config::set('jwt.user', 'App\Models\User');
-        // Config::set('auth.providers.users.model', \App\Models\User::class);
-        
         $clientId = $this->getLoggedInUser()->id;
         $client = $this->getById($clientId);
+        $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone']);
+        
         $client->update($newClient);
+        $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        if (isset($request['password']) && $request['password'] != null)
+            $newUser['password'] = $request['password']; 
+        $client->user->update($newUser);
 
-        return $client;
+        return;
     }
 
     public function forgetPasswordEmail($email)
@@ -116,7 +169,7 @@ class ClientsService
     public function get()
     {
 
-        $clients = User::with('client')->where('role','client')->get();
+        $clients = User::with('client')->where('role', 'client')->get();
 
         return $clients;
     }
@@ -128,7 +181,6 @@ class ClientsService
         try {
 
             $client->update(['active' => $request->status]);
-
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
@@ -138,11 +190,11 @@ class ClientsService
     public function viewProfile()
     {
         $loggedInUser = $this->getLoggedInUser();
-        if($loggedInUser->role == 'client')
+        if ($loggedInUser->role == 'client')
             $clientId = $loggedInUser->id;
         else
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized')));
-        $client = Client::where('id' , $clientId)->with('clientLocation')->get();
+        $client = Client::where('id', $clientId)->with('clientLocation')->get();
 
         return $client;
     }
@@ -153,7 +205,6 @@ class ClientsService
 
         $createdUser = Client::create($client);
         return $createdUser;
-
     }
 
 
@@ -163,7 +214,6 @@ class ClientsService
         $client = $this->getById($newClient['id']);
         $client->update($newClient);
         return $client;
-
     }
 
     public function delete($id)
@@ -180,8 +230,4 @@ class ClientsService
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
         }
     }
-
-    
-
-
 }

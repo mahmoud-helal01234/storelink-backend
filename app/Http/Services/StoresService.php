@@ -4,15 +4,22 @@ namespace App\Http\Services;
 
 use stdClass;
 use Exception;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\Review;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Traits\ResponsesTrait;
 use Illuminate\Support\Facades\Log;
+use App\Http\Traits\ArraySliceTrait;
 use App\Http\Traits\FileUploadTrait;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Services\Users\AuthService;
+use App\Models\DriversApp\UserDeviceToken;
+use App\Http\Resources\Auth\StoreLoginResource;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoresService
@@ -20,10 +27,138 @@ class StoresService
 
     use ResponsesTrait;
     use FileUploadTrait;
+    use ArraySliceTrait;
     use LoggedInUserTrait;
 
     private $companiesCategoriesService;
     private $proudctsService;
+
+    public function me()
+    {
+
+        $user = $this->getLoggedInUser();
+        if (!$this->isLoggedInUserStore()) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
+        }
+        
+        $user->store;
+        return $user;
+    }
+
+    public function updateProfile($request)
+    {
+
+        $storeId = $this->getLoggedInUser()->id;
+        $store = $this->getById($storeId);
+        $newStore = $this->array_slice_assoc($request, [
+            'name_en',
+            'name_ar',
+            'delivery_charge',
+            'lat',
+            'long',
+            'address',
+            'first_phone_number',
+            'second_phone_number',
+            'whatsapp_number'
+        ]);
+
+
+        if (isset($request['logo_image']) && $request['logo_image'] != null && !str_starts_with($request['logo_image'], 'http')) {
+            $newStore['logo_image'] = $request['logo_image'];
+        }
+
+        if (isset($request['cover_image']) && $request['cover_image'] != null && !str_starts_with($request['cover_image'], 'http')) {
+            $newStore['cover_image'] = $request['cover_image'];
+        }
+
+        $store->update($newStore);
+
+        // update user
+        $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        if (isset($request['password']) && $request['password'] != null)
+            $newUser['password'] = $request['password']; 
+
+        $store->user->update($newUser);
+        return;
+    }
+
+    public function register($request)
+    {
+
+
+        DB::beginTransaction();
+        // 1- create user
+        $user = $this->array_slice_assoc($request, [ 'email', 'password']);
+        $user['role'] = 'store';
+        $user['active'] = 0;
+
+        $user = User::create($user);
+
+        // 2- create client with user_id
+        $store = $this->array_slice_assoc($request, [
+            'name_en',
+            'name_ar',
+            'logo_image',
+            'cover_image',
+            'delivery_charge',
+            'lat',
+            'long',
+            'address',
+            'first_phone_number',
+            'second_phone_number',
+            'whatsapp_number'
+        ]);
+
+        $store['user_id'] = $user->id;
+        $createdStore = Store::create($store);
+
+        // 3- create token for user
+        $credentials =  ['email' => $user['email'], 'password' => $user['password']];
+
+        $token = JWTAuth::fromUser($user);
+
+        DB::commit();
+        $user->token = $token;
+        $user->phone = $createdStore->phone;
+
+        return StoreLoginResource::make($user);
+    }
+
+    public function login($user)
+    {
+
+        $credentials = $this->array_slice_assoc($user, ['email', 'password']);
+
+        $token = Auth::guard('authenticate')->attempt($credentials);
+        
+        if (!$token || !$this->isLoggedInUserStore()) {
+
+            throw new HttpResponseException($this->apiResponse(null, false, __('wrong email or password')));
+        }
+        
+        $authUser = Auth::guard('authenticate')->user();
+        if($authUser->active == 0){
+            throw new HttpResponseException($this->apiResponse(null, false, __('account not active')));
+        }
+
+        if($authUser->is_verified == 0){
+            // send otp to user's email
+            $authService = new AuthService();
+            $authService->sendOTP($authUser->email);
+            throw new HttpResponseException($this->apiResponse(["is_verified" => 0], false, __('account not verified')));
+        }
+        
+        if (isset($user['device_token']) &&  $user['device_token'] != null) {
+            UserDeviceToken::create([
+
+                'user_id' => $authUser->id,
+                'device_token' => $user['device_token'],
+            ]);
+        }
+
+        $authUser['token'] = $token;
+        return $authUser;
+    }
 
     public function getCategoriesNotAssignedToStore()
     {
@@ -88,8 +223,8 @@ class StoresService
                 $stores = $stores->whereRaw("{$haversine} <= ?", [$lat, $long, $lat, $distanceInMeters]);
             }
             $stores = $stores->get();
-        }else if($this->isLoggedInUserAdmin()) {
-            
+        } else if ($this->isLoggedInUserAdmin()) {
+
             $stores = Store::get();
         }
 
@@ -154,14 +289,13 @@ class StoresService
                 }
                 $store->cart_order = $cartOrder;
             }
-        }else if($this->isLoggedInUserAdmin()) {
-            
-            $store = Store::where('user_id', $storeId)
-            ->with('categories.products','promoCodes')->first();
-            $ordersService = new OrdersService();
-            $store->orders = Order::with('items','review','client')->where('store_id', $storeId)
-                ->whereNot('status', 'in_cart')->get();
+        } else if ($this->isLoggedInUserAdmin()) {
 
+            $store = Store::where('user_id', $storeId)
+                ->with('categories.products', 'promoCodes')->first();
+            $ordersService = new OrdersService();
+            $store->orders = Order::with('items', 'review', 'client')->where('store_id', $storeId)
+                ->whereNot('status', 'in_cart')->get();
         }
         if ($store == null)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
