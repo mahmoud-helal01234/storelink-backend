@@ -17,7 +17,7 @@ trait NotificationsTrait
 
     public function sendNotification($title, $body, $data = [], $toAllUsers = false, $firebaseDeviceTokens = [])
     {
-        // $firebaseDeviceTokens = User::whereNotNull('device_token')->pluck('device_token')->all();
+        //  $firebaseDeviceTokens = User::whereNotNull('device_token')->pluck('device_token')->all();
 
         try{
         if ($toAllUsers) {

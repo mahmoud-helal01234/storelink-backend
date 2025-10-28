@@ -3,6 +3,8 @@
 namespace App\Http\Services;
 
 use App\Models\Product;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
 use App\Http\Traits\ResponsesTrait;
 use App\Models\CompaniesCategories;
 use App\Http\Traits\FileUploadTrait;
@@ -83,12 +85,19 @@ class ProductsService
     {
 
 
-        $product = $this->getById($id);
-        $this->canAccessProduct($product);
 
         try {
+            DB::beginTransaction();
+            $product = $this->getById($id);
+            $this->canAccessProduct($product);
 
             $product->delete();
+            OrderItem::where('product_id',$id)->whereHas('order',function ($query) {
+                $query->where('status','in_cart');
+            })->delete();
+    
+            DB::commit();
+            
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));

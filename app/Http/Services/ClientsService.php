@@ -12,6 +12,7 @@ use App\Http\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Services\Users\AuthService;
 use App\Http\Resources\Auth\ClientLoginResource;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -66,6 +67,17 @@ class ClientsService
         }
 
         $authUser = Auth::guard('authenticate')->user();
+        if($authUser->active == 0){
+            throw new HttpResponseException($this->apiResponse(null, false, __('account not active')));
+        }
+
+        if($authUser->is_verified == 0){
+            // send otp to user's email
+            $authService = new AuthService();
+            $authService->sendOTP($authUser->email);
+            throw new HttpResponseException($this->apiResponse(["is_verified" => 0], false, __('account not verified')));
+        }
+        
         if (isset($user['device_token']) &&  $user['device_token'] != null) {
             UserDeviceToken::create([
 

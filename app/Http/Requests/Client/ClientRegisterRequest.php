@@ -37,7 +37,7 @@ class ClientRegisterRequest extends FormRequest
             'phone'         => 'required|string|max:255|unique:clients',
             'password'      => 'required|string|min:6',
             'lat'           => 'required|numeric',
-            'long'          => 'required|numeric',
+            'long'          => 'required|numeric'
         ];
     }
 

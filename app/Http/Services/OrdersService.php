@@ -141,6 +141,7 @@ class OrdersService
 
         $price = 0;
         foreach ($order->items as $item) {
+            
             if ($item->product->offer_price != null && $item->product->offer_price > 0)
                 $price += $item->product->offer_price * $item->quantity;
             else
@@ -902,7 +903,6 @@ class OrdersService
                             case "client":
                                 $productOptionIds = array_column($newOrder['items'], 'product_option_id');
                                 $productOptions = ProductOption::whereIn('id', $productOptionIds)->get();
-
 
                                 OrderItem::where('order_id', $order['id'])->delete();
 

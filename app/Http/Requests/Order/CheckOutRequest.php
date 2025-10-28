@@ -41,7 +41,7 @@ class CheckOutRequest extends FormRequest
 
         return [ 
                 "order_id" => 'required|numeric|exists:orders,id,status,in_cart'
-            ];
+        ];
     }
 
     public function messages(): array
