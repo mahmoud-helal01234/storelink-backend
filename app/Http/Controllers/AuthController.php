@@ -159,9 +159,9 @@ class AuthController extends Controller
     {
 
         $user = $request->validated();
-        $CreatedUser = $this->authService->forgetPassword($user);
+        $otpToTest = $this->authService->forgetPassword($user);
 
-        return $this->apiResponse($CreatedUser, true, __('success.otp_sent'));
+        return $this->apiResponse($otpToTest, true, __('success.otp_sent'));
     }
 
     public function logout()

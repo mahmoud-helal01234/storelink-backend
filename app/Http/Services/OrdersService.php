@@ -41,6 +41,7 @@ class OrdersService
     use ResponsesTrait, ArraySliceTrait;
     use LoggedInUserTrait, NotificationTrait;
 
+    
     public function getMyOrders()
     {
         if ($this->isLoggedInUserStore()) {
@@ -260,12 +261,23 @@ class OrdersService
         $order->long = $order->client->long;
         $order->status = 'pending';
         $order->save();
+        $notificationsService = new NotificationsService();
+
+        $notificationsService->create([
+            'user_id' => $order->store_id,
+            'order_id' => $order->id,
+            'title_en' => "New order placed #". $order->id,
+            'title_ar' => "تم تقديم طلب جديد " . $order->id,
+            'body_en' => "A new order has been placed by " . $order->client->name,
+            'body_ar' => "تم تقديم طلب جديد بواسطة " . $order->client->name
+        ]);
 
         return $order;
     }
 
     public function isOrderForLoggedInClient($order)
     {
+        dd($order->client_id , $this->getLoggedInUser()->id);
         if ($order->client_id != $this->getLoggedInUser()->id)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
         return true;
@@ -280,6 +292,7 @@ class OrdersService
 
     public function canClientReviewOrder($order)
     {
+        dd($this->isOrderForLoggedInClient($order));
         if (!$this->isOrderForLoggedInClient($order) || $order->status != 'delivered')
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
         return true;
@@ -538,12 +551,56 @@ class OrdersService
     public function changeOrderStatus($request)
     {
 
-        
         $order = $this->getById($request['order_id']);
         if($this->getLoggedInUserStoreId() != $order->store_id)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
-    
+        if(!in_array($request['status'], OrderStatusesConstant::statuses))
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.invalid_status'), statusCode: 400));
+
         $order->update(['status' => $request['status']]);
+
+        // additional logic based on status
+        if($order->status=='processing')
+        {
+            $notification =
+            [
+                'title_ar' => "حالة الطلب رقم" . $order->id . "تغيرت",
+                'title_en' => "Order status changed #" . $order->id,
+                'body_ar' => "تم تغيير حالة الطلب إلى قيد التنفيذ",
+                'body_en' => "Order status changed to processing",
+            ];
+        }else if($order->status=='in_delivery')
+        {
+            $notification =
+            [
+                'title_ar' => "حالة الطلب رقم" . $order->id . "تغيرت",
+                'title_en' => "Order status changed #" . $order->id,
+                'body_ar' => "جاري توصيل الطلب",
+                'body_en' => "Your order is out for delivery",
+            ];
+        }else if($order->status=='delivered')
+        {
+            $notification =
+            [
+                'title_ar' => "تم توصيل الطلب رقم " . $order->id,
+                'title_en' => "Order Delivered #" . $order->id,
+                'body_ar' => "تم توصيل طلبك بنجاح",
+                'body_en' => "Your order has been delivered successfully",
+            ];
+        }
+        if(isset($notification)){
+
+            $notificationsService = new NotificationsService();
+
+            $notificationsService->create([
+                'user_id' => $order->client_id,
+                'title_en' => $notification['title_en'],
+                'title_ar' => $notification['title_ar'],
+                'body_en' => $notification['body_en'],
+                'body_ar' => $notification['body_ar']
+            ]);                          
+
+        }
 
         // send notification to all related users
         /*

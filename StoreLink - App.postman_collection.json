@@ -262,6 +262,70 @@
 							"response": []
 						},
 						{
+							"name": "activate / deactivate",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "user_id",
+											"value": "3",
+											"type": "text"
+										},
+										{
+											"key": "status",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{url}}user/toggleActivation"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "get",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}order?status=&store_id=2",
+									"host": [
+										"{{url}}order"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": ""
+										},
+										{
+											"key": "store_id",
+											"value": "2"
+										},
+										{
+											"key": "client_id",
+											"value": "3",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "remove review",
 							"request": {
 								"method": "DELETE",
@@ -323,69 +387,6 @@
 									]
 								},
 								"url": "{{url}}review/9"
-							},
-							"response": []
-						},
-						{
-							"name": "activate / deactivate",
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "user_id",
-											"value": "3",
-											"type": "text"
-										},
-										{
-											"key": "status",
-											"value": "1",
-											"type": "text"
-										}
-									]
-								},
-								"url": "{{url}}user/toggleActivation"
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Orders",
-					"item": [
-						{
-							"name": "get",
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "api-token",
-										"value": "{{apiToken}}",
-										"type": "text"
-									}
-								],
-								"url": {
-									"raw": "{{url}}order?status=&store_id=2&client_id=3",
-									"host": [
-										"{{url}}order"
-									],
-									"query": [
-										{
-											"key": "status",
-											"value": ""
-										},
-										{
-											"key": "store_id",
-											"value": "2"
-										},
-										{
-											"key": "client_id",
-											"value": "3"
-										}
-									]
-								}
 							},
 							"response": []
 						}
@@ -721,6 +722,54 @@
 							"response": []
 						},
 						{
+							"name": "forget password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"mahmoud.helal01234@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}forgetPassword"
+							},
+							"response": []
+						},
+						{
+							"name": "verify otp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"mahmoud.helal01234@gmail.com\",\r\n    \"otp\":\"260350\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}verifyOTP"
+							},
+							"response": []
+						},
+						{
 							"name": "reset password",
 							"request": {
 								"method": "POST",
@@ -741,54 +790,6 @@
 									}
 								},
 								"url": "{{url}}resetPassword"
-							},
-							"response": []
-						},
-						{
-							"name": "send otp",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "api-token",
-										"value": "{{apiToken}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"email\":\"mahmoud.helal01234@gmail.com\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": "{{url}}sendOTP"
-							},
-							"response": []
-						},
-						{
-							"name": "forget password",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "api-token",
-										"value": "{{apiToken}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"email\":\"\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": "{{url}}forget-password"
 							},
 							"response": []
 						}
@@ -826,7 +827,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"code\": \"F67892\",\r\n    \"active\": 1,\r\n    \"discount_type\": \"percentage\",\r\n    \"value\": 40,\r\n    \"expiration_datetime\": \"2025-10-01 05:54:02\"\r\n}",
+									"raw": "{\r\n    \"code\": \"F67895\",\r\n    \"discount_type\": \"percentage\",\r\n    \"value\": 40,\r\n    \"expiration_datetime\": \"2025-10-01 05:54:02\"\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1006,7 +1007,7 @@
 										{
 											"key": "image",
 											"type": "file",
-											"src": "/D:/YAMA VET.png"
+											"src": "/D:/YAMA VET-512.png"
 										}
 									]
 								},
@@ -1015,7 +1016,7 @@
 							"response": []
 						},
 						{
-							"name": "update product",
+							"name": "Update product",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1029,28 +1030,48 @@
 									"mode": "formdata",
 									"formdata": [
 										{
-											"key": "id",
-											"value": "484",
+											"key": "category_id",
+											"value": "49",
 											"type": "text"
 										},
 										{
-											"key": "name",
-											"value": "شيلا1",
+											"key": "name_en",
+											"value": "شيلا",
 											"type": "text"
 										},
 										{
-											"key": "description",
-											"value": "101",
+											"key": "description_en",
+											"value": "10",
+											"type": "text"
+										},
+										{
+											"key": "name_ar",
+											"value": "شيلا",
+											"type": "text"
+										},
+										{
+											"key": "description_ar",
+											"value": "10",
 											"type": "text"
 										},
 										{
 											"key": "price",
-											"value": "91",
+											"value": "3",
 											"type": "text"
 										},
 										{
 											"key": "offer_price",
-											"value": "51",
+											"value": "2.5",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/D:/YAMA VET.png"
+										},
+										{
+											"key": "id",
+											"value": "486",
 											"type": "text"
 										}
 									]
@@ -1130,36 +1151,6 @@
 										"type": "text"
 									}
 								],
-								"body": {
-									"mode": "formdata",
-									"formdata": [
-										{
-											"key": "id",
-											"value": "484",
-											"type": "text"
-										},
-										{
-											"key": "name",
-											"value": "شيلا1",
-											"type": "text"
-										},
-										{
-											"key": "description",
-											"value": "101",
-											"type": "text"
-										},
-										{
-											"key": "price",
-											"value": "91",
-											"type": "text"
-										},
-										{
-											"key": "offer_price",
-											"value": "51",
-											"type": "text"
-										}
-									]
-								},
 								"url": "{{url}}category/49/store/"
 							},
 							"response": []
@@ -1331,6 +1322,21 @@
 							"response": []
 						},
 						{
+							"name": "me",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}client/me"
+							},
+							"response": []
+						},
+						{
 							"name": "update profile",
 							"request": {
 								"method": "POST",
@@ -1355,7 +1361,7 @@
 							"response": []
 						},
 						{
-							"name": "me",
+							"name": "forget password",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -1365,7 +1371,40 @@
 										"type": "text"
 									}
 								],
-								"url": "{{url}}client/me"
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"mahmoud.helal01234@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}forgetPassword"
+							},
+							"response": []
+						},
+						{
+							"name": "verify otp",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "api-token",
+										"value": "{{apiToken}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"store@store.com\",\r\n    \"otp\":\"440372\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}verifyOTP"
 							},
 							"response": []
 						},
@@ -1390,30 +1429,6 @@
 									}
 								},
 								"url": "{{url}}resetPassword"
-							},
-							"response": []
-						},
-						{
-							"name": "otp",
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "api-token",
-										"value": "{{apiToken}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"email\":\"\",\r\n    \"code\":\"21321321\"\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": "{{url}}otp"
 							},
 							"response": []
 						}

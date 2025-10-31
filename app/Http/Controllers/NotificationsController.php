@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Orders;
+namespace App\Http\Controllers;
 
 use App\Http\Traits\ResponsesTrait;
-use App\Http\Services\Orders\NotificationsService;
+use App\Http\Services\NotificationsService;
 use App\Http\Traits\FileUploadTrait;
 use App\Http\Controllers\Controller;
 

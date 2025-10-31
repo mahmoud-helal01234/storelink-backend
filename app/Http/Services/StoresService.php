@@ -144,8 +144,8 @@ class StoresService
         if($authUser->is_verified == 0){
             // send otp to user's email
             $authService = new AuthService();
-            $authService->sendOTP($authUser->email);
-            throw new HttpResponseException($this->apiResponse(["is_verified" => 0], false, __('account not verified')));
+            $otp = $authService->sendOTP($authUser->email);
+            throw new HttpResponseException($this->apiResponse(["is_verified" => 0, "otp"=> $otp], false, __('account not verified')));
         }
         
         if (isset($user['device_token']) &&  $user['device_token'] != null) {

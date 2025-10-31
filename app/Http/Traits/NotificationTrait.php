@@ -7,8 +7,8 @@ trait NotificationTrait
       function sendNotification($data_send=array(),$users=array()){
         $content =
         [
-            "ar" => $data_send["message_ar"],
-            "en" => $data_send["message_en"]
+            "ar" => $data_send["body_ar"],
+            "en" => $data_send["body_en"]
         ];
         $headings=
         [
@@ -24,7 +24,7 @@ trait NotificationTrait
             'small_icon'    => 'ic_launcher-web',
             //'large_icon' =>"ic_launcher_round.png",
             'contents' => $content,
-            'headings'=> $headings //<---- include it to request
+            'headings'=> $headings
         );
 
         if(empty($users))

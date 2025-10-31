@@ -87,9 +87,9 @@ class AuthService
             ['code' => $otp,'active' => 1, 'created_at' => now()]
         );
         
-        Mail::to($email)
-            ->send(new OTPMail($otp));
-            
+        // Mail::to($email)
+        //     ->send(new OTPMail($otp));
+        return $otp; // for testing purposes only
     }
 
     public function forgetPassword($request){
@@ -97,8 +97,8 @@ class AuthService
         if(User::where('email', $request['email'])->first() == null){
             throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
         }
-        $this->sendOTP($request['email']);
-        return;
+        
+        return $this->sendOTP($request['email']);
             
     }
 

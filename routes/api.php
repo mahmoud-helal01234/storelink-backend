@@ -23,8 +23,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('store/register', 'StoresController@register');
     Route::post('store/login', 'StoresController@login');
 
-    Route::post('forgetPassword', 'AuthController@forgetPassword'); 
-    Route::post('verifyOTP', 'AuthController@verifyOTP'); 
+    Route::post('forgetPassword', 'AuthController@forgetPassword');
+    Route::post('verifyOTP', 'AuthController@verifyOTP');
 
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
@@ -58,15 +58,17 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
         Route::get('category/store/notAssigned', 'CategoriesController@getCategoriesNotAssignedToStore');
         Route::post('category/store/add', 'CategoriesController@addCategoryToMyStore');
-        Route::delete('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
+        Route::get('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
         
         Route::post('order/status', 'OrdersController@changeOrderStatus');
+
     });
     // end store only routes
 
     // start common routes for store & admin & user
     Route::group(['middleware' => ['authenticate']], function () {
 
+        Route::get('notification', 'NotificationsController@get');
 
         Route::post('resetPassword', 'AuthController@resetPassword');
 
@@ -165,6 +167,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::get('client/logout', 'ClientsController@logout');
 
             Route::post('device_token', 'UsersController@createDeviceToken');
+
+
         });
         Route::get('company_rate', 'CompaniesController@getCompanyRates');
 
@@ -362,7 +366,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('order_comment/update', 'OrderCommentsController@update');
             Route::delete('order_comment/{id}', 'OrderCommentsController@delete');
 
-            Route::get('notification', 'NotificationsController@get');
             Route::delete('notification/{id}', 'NotificationsController@delete');
         });
 

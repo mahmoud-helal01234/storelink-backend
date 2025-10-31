@@ -12,26 +12,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Notification extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'id', 'drivers_app_order_id', 'order_id', 'user_id', 'title_ar', 'title_en', 'body_ar', 'body_en', 'action', 'action_data', 'created_at'
-    ];
-    protected $casts = [
-        'action_data' => 'json',
+        'id', 'user_id', 'title_ar', 'title_en', 'body_ar', 'body_en', 'created_at'
     ];
 
-    /**
-     * The roles that belong to the Notification
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function users(): BelongsToMany
+    public function user()
     {
-        return $this->belongsToMany(User::class, 'drivers_app_users_notifications', 'user_id', 'id');
+
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function order(): BelongsTo
-    {
-        return $this->belongsTo(Order::class, 'order_id', 'id');
-    }
-    
 }
