@@ -40,7 +40,7 @@ class StoresService
         if (!$this->isLoggedInUserStore()) {
             throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
         }
-        
+
         $user->store;
         return $user;
     }
@@ -76,7 +76,7 @@ class StoresService
         // update user
         $newUser = $this->array_slice_assoc($request, ['name', 'email']);
         if (isset($request['password']) && $request['password'] != null)
-            $newUser['password'] = $request['password']; 
+            $newUser['password'] = $request['password'];
 
         $store->user->update($newUser);
         return;
@@ -88,7 +88,7 @@ class StoresService
 
         DB::beginTransaction();
         // 1- create user
-        $user = $this->array_slice_assoc($request, [ 'email', 'password']);
+        $user = $this->array_slice_assoc($request, ['email', 'password']);
         $user['role'] = 'store';
         $user['active'] = 0;
 
@@ -130,24 +130,24 @@ class StoresService
         $credentials = $this->array_slice_assoc($user, ['email', 'password']);
 
         $token = Auth::guard('authenticate')->attempt($credentials);
-        
+
         if (!$token || !$this->isLoggedInUserStore()) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('wrong email or password')));
         }
-        
+
         $authUser = Auth::guard('authenticate')->user();
-        if($authUser->active == 0){
+        if ($authUser->active == 0) {
             throw new HttpResponseException($this->apiResponse(null, false, __('account not active')));
         }
 
-        if($authUser->is_verified == 0){
+        if ($authUser->is_verified == 0) {
             // send otp to user's email
             $authService = new AuthService();
             $otp = $authService->sendOTP($authUser->email);
-            throw new HttpResponseException($this->apiResponse(["is_verified" => 0, "otp"=> $otp], false, __('account not verified')));
+            throw new HttpResponseException($this->apiResponse(["is_verified" => 0, "otp" => $otp], false, __('account not verified')));
         }
-        
+
         if (isset($user['device_token']) &&  $user['device_token'] != null) {
             UserDeviceToken::create([
 
@@ -254,7 +254,11 @@ class StoresService
         if ($this->isLoggedInUserStore() && $storeId == null)
             $storeId = $this->getLoggedInUserStoreId();
 
-        $store = Store::where('user_id', $storeId)->with('categories.products')->first();
+        $store = Store::where('user_id', $storeId)->with([
+            'categories.products' => function ($query) use ($storeId) {
+                $query->where('store_id', $storeId);
+            },
+        ])->first();
         $store->reviews =  Review::join('orders', 'reviews.order_id', '=', 'orders.id')
             ->join('clients', 'orders.client_id', '=', 'clients.user_id')
             ->where('orders.store_id', $storeId)

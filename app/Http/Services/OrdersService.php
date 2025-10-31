@@ -277,7 +277,6 @@ class OrdersService
 
     public function isOrderForLoggedInClient($order)
     {
-        dd($order->client_id , $this->getLoggedInUser()->id);
         if ($order->client_id != $this->getLoggedInUser()->id)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
         return true;
