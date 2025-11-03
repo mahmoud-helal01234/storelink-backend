@@ -107,18 +107,13 @@ class ClientsService
         // 2- create client with user_id
         $client = $this->array_slice_assoc($request, ['name', 'address', 'lat', 'long', 'phone']);
         $client['user_id'] = $user->id;
-        $createdClient = Client::create($client);
+        Client::create($client);
 
-        // 3- create token for user
-        $credentials =  ['email' => $user['email'], 'password' => $user['password']];
-        // $token = Auth::guard('authenticate-clients')->attempt($credentials);
-        $token = JWTAuth::fromUser($user);
-        // $token = Auth::guard('authenticate-clients')->attempt($credentials);
 
         DB::commit();
-        $user->token = $token;
-        $user->phone = $createdClient->phone;
-        return ClientLoginResource::make($user);
+
+        return;
+        // return ClientLoginResource::make($user);
     }
 
     // public function register($client)

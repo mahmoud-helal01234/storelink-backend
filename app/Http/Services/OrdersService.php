@@ -291,7 +291,6 @@ class OrdersService
 
     public function canClientReviewOrder($order)
     {
-        dd($this->isOrderForLoggedInClient($order));
         if (!$this->isOrderForLoggedInClient($order) || $order->status != 'delivered')
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
         return true;
@@ -1099,7 +1098,8 @@ class OrdersService
                 'promoCode',
                 'client',
                 'items.product',
-                'store'
+                'store',
+                'review'
             ]
         )->where('status', '!=', 'in_cart');
 

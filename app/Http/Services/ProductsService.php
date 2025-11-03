@@ -59,7 +59,10 @@ class ProductsService
     public function canAccessProduct($product)
     {
         
-        if ($product->store_id != $this->getLoggedInUserStoreId())
+        if($this->isLoggedInUserAdmin())
+            return true;
+        
+        if ($product->store_id != $this->getLoggedInUserStoreId() )
             throw new HttpResponseException($this->apiResponse(null, false, __('auth.authorization.not_authorized'), statusCode: 403));
     }
     public function update($newProduct)
@@ -80,11 +83,18 @@ class ProductsService
         }
     }
 
+    public function deleteByCategoryId($categoryId)
+    {
+
+        $products = Product::where('category_id', $categoryId)->get();
+
+        foreach ($products as $product) {
+            $this->delete($product->id);
+        }
+    }
 
     public function delete($id)
     {
-
-
 
         try {
             DB::beginTransaction();

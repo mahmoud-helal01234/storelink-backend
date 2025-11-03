@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ConfirmationCode extends Model
 {
     use HasFactory;
-    protected $fillable = ['id', 'email', 'code','active'];
+    protected $fillable = ['id', 'email', 'code','active', 'created_at'];
 
     
 }

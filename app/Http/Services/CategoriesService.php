@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use Exception;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
 use App\Http\Traits\ResponsesTrait;
 use Illuminate\Support\Facades\Log;
 use App\Http\Traits\FileUploadTrait;
@@ -135,15 +136,22 @@ class CategoriesService
 
         $category = $this->getById($id);
 
-        try {
-
-            // $this->deleteRelationsWithCategory($category->id);
+            DB::beginTransaction();
+            $this->deleteCategoryProducts($id);
             $category->delete();
-
+            DB::commit();
+        try {
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
         }
+    }
+
+    public function deleteCategoryProducts($categoryId)
+    {
+
+        $this->proudctsService = new ProductsService;
+        $this->proudctsService->deleteByCategoryId(categoryId: $categoryId);
     }
 
     public function deleteRelationsWithCategory($categoryId)

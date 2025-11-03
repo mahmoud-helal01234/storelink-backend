@@ -85,7 +85,6 @@ class StoresService
     public function register($request)
     {
 
-
         DB::beginTransaction();
         // 1- create user
         $user = $this->array_slice_assoc($request, ['email', 'password']);
@@ -115,12 +114,10 @@ class StoresService
         // 3- create token for user
         $credentials =  ['email' => $user['email'], 'password' => $user['password']];
 
-        $token = JWTAuth::fromUser($user);
 
         DB::commit();
-        $user->token = $token;
-        $user->phone = $createdStore->phone;
-
+        
+        
         return StoreLoginResource::make($user);
     }
 
@@ -137,8 +134,9 @@ class StoresService
         }
 
         $authUser = Auth::guard('authenticate')->user();
+        
         if ($authUser->active == 0) {
-            throw new HttpResponseException($this->apiResponse(null, false, __('account not active')));
+            throw new HttpResponseException($this->apiResponse(["is_active" => 0], false, __('account not active')));
         }
 
         if ($authUser->is_verified == 0) {
@@ -225,7 +223,7 @@ class StoresService
             $stores = $stores->get();
         } else if ($this->isLoggedInUserAdmin()) {
 
-            $stores = Store::get();
+            $stores = Store::with('user')->get();
         }
 
 

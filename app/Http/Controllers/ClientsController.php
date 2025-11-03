@@ -62,7 +62,7 @@ class ClientsController extends Controller
         $user = $request->validated();
         $CreatedUser = $this->clientsService->register($user);
 
-        return $this->apiResponse($CreatedUser, true, __('success.login'));
+        return $this->apiResponse($CreatedUser, true, __('success.register'));
     }
 
 
