@@ -18,20 +18,13 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         // 'redirect' => env('GOOGLE_REDIRECT'),
-        'redirect' => 'https://aquacare-laundry.com/api/login/google/callback',
+        'redirect' => null
     ],
-
-    'github' => [
-        'client_id' => env('GITHUB_CLIENT_ID'),
-        'client_secret' => env('GITHUB_CLIENT_SECRET')
-        // 'redirect' => 'GITHUB_REDIRECT_URI',
-    ],
-
     'facebook' => [
         'client_id' => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
         //'redirect' => env('FACEBOOK_REDIRECT_URI'),
-        'redirect' => 'https://aquacare-laundry.com/api/login/facebook/callback',
+        'redirect' => null
     ],
 
 

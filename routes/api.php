@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use App\Http\Services\NotificationsService;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,15 +15,31 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], function () {
-    
+    Route::get('ping', function () {
+
+        $notificationsService = new NotificationsService();
+
+        $notificationsService->create([
+            'user_id' => 2,
+            'order_id' => 2,
+            'title_en' => "New order placed #" . 2,
+            'title_ar' => "تم تقديم طلب جديد " . 2,
+            'body_en' => "A new order has been placed by " . "Client Name",
+            'body_ar' => "تم تقديم طلب جديد بواسطة " . "client name",
+        ], "store");
+
+
+        return response()->json(['message' => 'pong'], 200);
+    });
     Route::post('login', 'AuthController@login'); // dashboard
 
     Route::post('client/login', 'ClientsController@login');
     Route::post('client/register', 'ClientsController@register');
 
-    
+
     Route::post('store/register', 'StoresController@register');
     Route::post('store/login', 'StoresController@login');
+    Route::post('store/social_login', 'StoresController@socialLogin');
 
     Route::post('forgetPassword', 'AuthController@forgetPassword');
     Route::post('verifyOTP', 'AuthController@verifyOTP');
@@ -44,38 +62,39 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('news', 'NewsController@create');
         Route::post('news/update', 'NewsController@update');
         Route::delete('news/{id}', 'NewsController@delete');
-
     });
 
 
 
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
+        Route::group(['middleware' => ['profile.completed']], function () {
+            Route::post('store/me', 'StoresController@me');
 
-        Route::post('store/me', 'StoresController@me');
+            Route::get('promo_code', 'PromoCodesController@get');
+            Route::post('promo_code', 'PromoCodesController@create');
+            Route::post('promo_code/update', 'PromoCodesController@update');
+            Route::delete('promo_code/{id}', 'PromoCodesController@delete');
+
+            Route::get('product', 'ProductsController@get');
+            Route::post('product', 'ProductsController@create');
+            Route::post('product/update', 'ProductsController@update');
+            Route::delete('product/{id}', 'ProductsController@delete');
+
+            Route::get('category/store/notAssigned', 'CategoriesController@getCategoriesNotAssignedToStore');
+            Route::post('category/store/add', 'CategoriesController@addCategoryToMyStore');
+            Route::get('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
+
+            Route::post('order/status', 'OrdersController@changeOrderStatus');
+        });
         Route::post('store/updateProfile', 'StoresController@updateProfile');
-
-        Route::get('promo_code', 'PromoCodesController@get');
-        Route::post('promo_code', 'PromoCodesController@create');
-        Route::post('promo_code/update', 'PromoCodesController@update');
-        Route::delete('promo_code/{id}', 'PromoCodesController@delete');
-
-        Route::get('product', 'ProductsController@get');
-        Route::post('product', 'ProductsController@create');
-        Route::post('product/update', 'ProductsController@update');
-        Route::delete('product/{id}', 'ProductsController@delete');
-
-        Route::get('category/store/notAssigned', 'CategoriesController@getCategoriesNotAssignedToStore');
-        Route::post('category/store/add', 'CategoriesController@addCategoryToMyStore');
-        Route::get('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
-        
-        Route::post('order/status', 'OrdersController@changeOrderStatus');
-
     });
     // end store only routes
 
     // start common routes for store & admin & user
-    Route::group(['middleware' => ['authenticate']], function () {
+    Route::group(['middleware' => ['authenticate', 'profile.completed']], function () {
+
+        Route::post('oneSignalDeviceId', 'AuthController@oneSignalDeviceIdStore');
 
         Route::get('notification', 'NotificationsController@get');
 
@@ -86,28 +105,28 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('category', 'CategoriesController@get');
 
         Route::get('store/details', 'StoresController@getDetailsById');
-        Route::get('store', 'StoresController@get');
 
+        Route::get('store', 'StoresController@get');
     });
 
     // start client only routes 
     Route::group(['middleware' => ['authenticate:client']], function () {
+        Route::group(['middleware' => ['profile.completed']], function () {
+            Route::post('client/me', 'ClientsController@me');
 
-        Route::post('client/me', 'ClientsController@me');
+            Route::post('order/addProductToCart', 'OrdersController@addProductToCart');
+            Route::post('order/applyPromoCode', 'OrdersController@applyPromoCode');
+            Route::post('order/cancelPromoCode', 'OrdersController@cancelPromoCode');
+            Route::post('order/review', 'OrdersController@reviewOrder');
+            Route::post('order/checkout', 'OrdersController@checkOut');
+            Route::get('cartDetails', 'OrdersController@getCartDetails');
+        });
         Route::post('client/updateProfile', 'ClientsController@updateProfile');
-
-        Route::post('order/addProductToCart', 'OrdersController@addProductToCart');
-        Route::post('order/applyPromoCode', 'OrdersController@applyPromoCode');
-        Route::post('order/cancelPromoCode', 'OrdersController@cancelPromoCode');
-        Route::post('order/review', 'OrdersController@reviewOrder');
-        Route::post('order/checkout', 'OrdersController@checkOut');
-        Route::get('cartDetails', 'OrdersController@getCartDetails');
     });
 
     Route::group(['middleware' => ['authenticate:client,store']], function () {
 
         Route::get('order/myOrders', 'OrdersController@getMyOrders');
-        
     });
 
     Route::get('product/{id}', 'ProductsController@getById');
@@ -175,14 +194,12 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::get('client/logout', 'ClientsController@logout');
 
             Route::post('device_token', 'UsersController@createDeviceToken');
-
-
         });
         Route::get('company_rate', 'CompaniesController@getCompanyRates');
 
 
         Route::post('refresh', 'AuthController@refresh');
-         // dashboard
+        // dashboard
 
         // done and tested
 

@@ -143,11 +143,14 @@ class ClientsService
         $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone']);
         
         $client->update($newClient);
+        
         $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        $newUser['is_profile_completed'] = 1;
         if (isset($request['password']) && $request['password'] != null)
             $newUser['password'] = $request['password']; 
+        
         $client->user->update($newUser);
-
+    
         return;
     }
 
@@ -242,47 +245,46 @@ class ClientsService
     public function socialLogin($data)
     {
 
-        $providerUser = null;
-        $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
-        dd($providerUser);
-        try {
-            
-        } catch (\Exception $ex) {
-            throw new HttpResponseException($this->apiResponse(null, false, __('invalid social login')));
-        }
-
-        $user = User::where('email', $providerUser->getEmail())->first();
-        if (!$user) {
-            // register the user
+        // $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        // $email = $providerUser->getEmail();
+        // $name = $providerUser->getName();
+        
+        $email = "client@gmail.com";
+        $name = "client name";
+        
+        // if email not found then register them in the system with complete_data = false
+        $user = User::where('email', $email)->first();
+        if($user == null){
+         
             DB::beginTransaction();
-            $user = User::create([
-                'name' => $providerUser->getName(),
-                'email' => $providerUser->getEmail(),
-                'role' => 'client',
-                'active' => 1,
-            ]);
-            Client::create([
-                'user_id' => $user->id,
-                'name' => $providerUser->getName(),
-            ]);
+            // 1- create user
+            $user = ["email" => $email, 'name' => $name];
+            $user['role'] = 'client';
+            $user['active'] = 1;
+            $user['is_verified'] = 1;
+
+            $user['is_profile_completed'] = 0;
+
+            $user = User::create($user);
+
+            // 2- create client with user_id
+            $client = ['name' => $name,'user_id' => $user->id];
+            Client::create($client);
+
             DB::commit();
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
-            $user->is_data_completed = false;
+            return $user;
+        }else if($user->is_profile_completed == false){
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
             return $user;
 
         }else{
-            if($user->role != 'client'){
-                throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
-            }
             // login the user
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
-            // if(){
-            //     $user->is_data_completed = false;}
+            return $user;
         }
-
-        
-
     }
 }

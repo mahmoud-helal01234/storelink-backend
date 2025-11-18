@@ -80,6 +80,7 @@ class Kernel extends HttpKernel
         'authenticate-client'=>
         \App\Http\Middleware\AuthenticateClient::class,
         'language' => \App\Http\Middleware\LanguageMiddleware::class,
+        'profile.completed' => \App\Http\Middleware\IsProfileCompleted::class,
 
     ];
 }

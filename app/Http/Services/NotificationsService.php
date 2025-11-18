@@ -2,16 +2,17 @@
 
 namespace App\Http\Services;
 
-use App\Http\Traits\LoggedInUserTrait;
-use App\Http\Traits\NotificationsTrait;
+use App\Models\User;
 use App\Http\Traits\ResponsesTrait;
+use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Traits\NotificationTrait;
 use App\Models\DriversApp\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class NotificationsService
 {
 
-    use ResponsesTrait,LoggedInUserTrait,NotificationsTrait;
+    use ResponsesTrait,LoggedInUserTrait,NotificationTrait;
 
     public function get()
     {
@@ -29,12 +30,19 @@ class NotificationsService
         return $notification;
     }
 
-    public function create($notification) {
+    public function create($notification,$app = "client") {
 
 
-            $createdNotification = Notification::create($notification);
-            
-            return $createdNotification;
+        $createdNotification = Notification::create($notification);
+        $this->sendNotification(
+            [
+                "title_ar"=>$notification['title_ar'],
+                "title_en"=>$notification['title_en'],
+                "body_ar"=>$notification['body_ar'],
+                "body_en"=>$notification['body_en']],
+            [User::where('id',$notification['user_id'])->first()->one_signal_device_id],$app
+        );
+        return $createdNotification;
         try {
 
         } catch (\Exception $ex) {

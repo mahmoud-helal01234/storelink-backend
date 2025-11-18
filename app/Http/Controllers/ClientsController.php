@@ -126,8 +126,8 @@ class ClientsController extends Controller
     {
 
         $user = $request->validated();
-        $LoggedInUser = $this->clientsService->socialLogin($user);
-        return $this->apiResponse($LoggedInUser, true, __('success.login'));
+        $response = $this->clientsService->socialLogin($user);
+        return $this->apiResponse($response, true, __('success.login'));
         
        
     }
@@ -140,6 +140,7 @@ class ClientsController extends Controller
         $this->clientsService->create($client);
         return $this->apiResponse();
     }
+
     public function update(UpdateRequest $request)
     {
 

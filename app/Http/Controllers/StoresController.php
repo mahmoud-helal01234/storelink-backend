@@ -8,6 +8,7 @@ use App\Http\Services\StoresService;
 use App\Http\Traits\FileUploadTrait;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Client\StoreRegisterRequest;
+use App\Http\Requests\Store\StoreSocialLoginRequest;
 use App\Http\Requests\Store\UpdateStoreProfileRequest;
 
 class StoresController extends Controller
@@ -21,6 +22,16 @@ class StoresController extends Controller
     {
 
         $this->storesService = new StoresService();
+    }
+
+    public function socialLogin(StoreSocialLoginRequest $request)
+    {
+
+        $user = $request->validated();
+        $response = $this->storesService->socialLogin($user);
+        return $this->apiResponse($response, true, __('success.login'));
+        
+       
     }
 
     public function me()

@@ -43,7 +43,7 @@ class UpdateRequest extends FormRequest
             'name'      => 'required|string|max:255',
             'email'     => 'required|string|email|max:255|unique:clients,email,' . request('id'),
             'phone' => 'required|string|max:255|unique:clients,phone,' . request('id'),
-            'password' => 'required|string|min:6',
+            'password' => 'sometimes|string|min:6',
             "active" => 'sometimes|numeric|in:0,1',
             "avatar" => 'sometimes|' . FormRequestRulesConstant::ImageValidation,
             'country_id'   =>  'required|exists:countries,id',

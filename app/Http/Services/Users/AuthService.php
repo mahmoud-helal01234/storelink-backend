@@ -42,6 +42,16 @@ class AuthService
         return $user;
     }
 
+    public function oneSignalDeviceIdStore($data)
+    {
+
+        $userId = $this->getLoggedInUser()->id;
+        $user = User::find($userId);
+        $user->one_signal_device_id = $data['one_signal_device_id'];
+        $user->save();
+        return $user;
+    }
+
     public function resetPassword($request)
     {
 

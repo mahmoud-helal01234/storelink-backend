@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Client;
+namespace App\Http\Requests\Auth;
 
-use App\Http\Traits\ResponsesTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Http\Traits\ResponsesTrait;
 
-class ClientSocialLoginRequest extends FormRequest
+class OneSignalDeviceIdStoreRequest extends FormRequest
 {
     use ResponsesTrait;
 
@@ -30,18 +30,15 @@ class ClientSocialLoginRequest extends FormRequest
     {
 
         return [
-            'access_token' => 'required',
-            'provider' => 'required|string|in:google,facebook'
+
+            'one_signal_device_id' => 'required|string'
         ];
     }
 
     public function messages(): array
     {
-
         return [
-            'access_token.required' => __('validation.token.required'),
-            'provider.required' => __('validation.provider.required'),
-            'provider.in' => __('validation.provider.in'),
+            'one_signal_device_id.required' => __('validation.one_signal_device_id.required')
         ];
     }
 

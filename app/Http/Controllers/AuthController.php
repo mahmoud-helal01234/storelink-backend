@@ -23,6 +23,7 @@ use App\Http\Requests\Auth\VerifyOTPRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Client\ClientLoginRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
+use App\Http\Requests\Auth\OneSignalDeviceIdStoreRequest;
 
 class AuthController extends Controller
 {
@@ -39,6 +40,13 @@ class AuthController extends Controller
     {
 
         $user = $this->authService->me();
+        return $this->apiResponse($user);
+    }
+
+    public function oneSignalDeviceIdStore(OneSignalDeviceIdStoreRequest $request)
+    {
+
+        $user = $this->authService->oneSignalDeviceIdStore($request->validated());
         return $this->apiResponse($user);
     }
 

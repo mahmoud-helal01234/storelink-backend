@@ -4,23 +4,33 @@ namespace App\Http\Traits;
 
 trait NotificationTrait
 {
-      function sendNotification($data_send=array(),$users=array()){
+
+      function sendNotification($data_send=array(),$users=array(),$app = "client"){
+        if($app == "store"){
+            $appId = "5f7b8f35-5f56-40c2-936c-762d6ed404f8";
+            $token = "os_v2_app_l55y6nk7kzamfe3moyww5vae7drldsdnxtmecleovfujmd2kclverbb6gkle7thtj4wworvufrmfoldsi4i2xgg5fui7agev3z6clua";
+        }else if($app == "client"){
+            $appId = "8a237384-f99a-4417-8fde-ccb2f27302b7";
+            $token = "os_v2_org_diuwfw7ktjgpfeokx5ol7sejaypennrkglmeljvbuko6gnwhv2outydexfbjzalmjr4kcb7qgjrg437is3q7pt32kry43mthwgiu6tq";
+        }
         $content =
         [
             "ar" => $data_send["body_ar"],
             "en" => $data_send["body_en"]
         ];
+        
         $headings=
         [
             "ar" => $data_send["title_ar"],
             "en" => $data_send["title_en"]
-        ]; //<---- this will add heading
+        ]; 
         
+
         $fields = array(
-            'app_id' => '5f7b8f35-5f56-40c2-936c-762d6ed404f8',
+            'app_id' => $appId,
             'data' => $data_send,
             'isAndroid'=>true,
-            'isIos'=>true,
+            'isIos'=>false,
             'content_available'=>true,
             'small_icon'    => 'ic_launcher-web',
             //'large_icon' =>"ic_launcher_round.png",
@@ -33,7 +43,11 @@ trait NotificationTrait
             $fields['included_segments']=array('All');
         }else
         {
-            $fields['user_ids']=$users;
+            $fields['include_player_ids'] = ["4396245f-a13b-4c9e-b68c-bbf018dd4763"];
+
+            // $fields['include_player_ids'] = $users;
+            // dd($users);
+
         }
 
         $fields = json_encode($fields);
@@ -41,7 +55,7 @@ trait NotificationTrait
         curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json; charset=utf-8',
-            'Authorization: Basic ZjNlOGJhNWQtMTBjOS00OTBhLWI0ZjAtMWZhYTg5NTVhNzU2'
+            'Authorization: Basic '.$token
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
@@ -50,7 +64,7 @@ trait NotificationTrait
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 
         $response = curl_exec($ch);
-        // var_dump($response);
+        var_dump($response);
         curl_close($ch);
 
         return $response;

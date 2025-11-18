@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Client;
+namespace App\Http\Requests\Store;
 
 use App\Http\Traits\ResponsesTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ClientSocialLoginRequest extends FormRequest
+class StoreSocialLoginRequest extends FormRequest
 {
     use ResponsesTrait;
 

@@ -76,6 +76,8 @@ class StoresService
 
         // update user
         $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        $newUser['is_profile_completed'] = 1;
+
         if (isset($request['password']) && $request['password'] != null)
             $newUser['password'] = $request['password'];
 
@@ -370,6 +372,55 @@ class StoresService
 
             $this->deleteRelationsWithStore($store->id);
             $store->delete();
+        }
+    }
+
+    public function socialLogin($data)
+    {
+
+        // $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        // $email = $providerUser->getEmail();
+        
+        $email = "store@gmail.com";
+
+        // if email not found then register them in the system with complete_data = false
+        $user = User::where('email', $email)->first();
+
+        if($user != null && $user->role != 'store'){
+            throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
+        }
+        
+        if($user == null){
+         
+            DB::beginTransaction();
+            // 1- create user
+            $user = ["email" => $email];
+            $user['role'] = 'store';
+            $user['active'] = 1;
+            $user['is_verified'] = 1;
+
+            $user['is_profile_completed'] = 0;
+
+            $user = User::create($user);
+
+            // 2- create client with user_id
+            $store = ['user_id' => $user->id];
+            Store::create($store);
+
+            DB::commit();
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
+            return $user;
+        }else if($user->is_profile_completed == false){
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
+            return $user;
+
+        }else{
+            // login the user
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
+            return $user;
         }
     }
 }
