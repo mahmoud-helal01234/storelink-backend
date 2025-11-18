@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Services\Users\AuthService;
+use Laravel\Socialite\Facades\Socialite;
 use App\Http\Resources\Auth\ClientLoginResource;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -236,5 +237,52 @@ class ClientsService
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
         }
+    }
+
+    public function socialLogin($data)
+    {
+
+        $providerUser = null;
+        $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        dd($providerUser);
+        try {
+            
+        } catch (\Exception $ex) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('invalid social login')));
+        }
+
+        $user = User::where('email', $providerUser->getEmail())->first();
+        if (!$user) {
+            // register the user
+            DB::beginTransaction();
+            $user = User::create([
+                'name' => $providerUser->getName(),
+                'email' => $providerUser->getEmail(),
+                'role' => 'client',
+                'active' => 1,
+            ]);
+            Client::create([
+                'user_id' => $user->id,
+                'name' => $providerUser->getName(),
+            ]);
+            DB::commit();
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
+            $user->is_data_completed = false;
+            return $user;
+
+        }else{
+            if($user->role != 'client'){
+                throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
+            }
+            // login the user
+            $token = Auth::guard('authenticate')->login($user);
+            $user->token = $token;
+            // if(){
+            //     $user->is_data_completed = false;}
+        }
+
+        
+
     }
 }

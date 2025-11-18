@@ -26,6 +26,10 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('forgetPassword', 'AuthController@forgetPassword');
     Route::post('verifyOTP', 'AuthController@verifyOTP');
 
+    Route::post('client/social_login', 'ClientsController@socialLogin');
+
+    Route::get('news', 'NewsController@get');
+
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
         Route::get('client', 'ClientsController@get');
@@ -36,6 +40,11 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('category', 'CategoriesController@create');
         Route::post('category/update', 'CategoriesController@update');
         Route::delete('category/{id}', 'CategoriesController@delete');
+
+        Route::post('news', 'NewsController@create');
+        Route::post('news/update', 'NewsController@update');
+        Route::delete('news/{id}', 'NewsController@delete');
+
     });
 
 
@@ -153,7 +162,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::group(['namespace' => 'Users'], function () {
 
         Route::get('/login/{provider}/callback', 'AuthController@handleProviderCallback');
-        Route::post('client/social_login', 'AuthController@socialLogin');
         // Route::get('auth/{provider}', 'AuthController@redirectToProvider');
         // Route::get('auth/{provider}/callback', 'AuthController@handleProviderCallback');
 

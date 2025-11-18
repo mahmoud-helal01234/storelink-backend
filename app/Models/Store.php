@@ -18,7 +18,7 @@ class Store extends Model
         'user_id', 'name_en', 'name_ar', 'logo_image', 'cover_image', 
         'delivery_charge', 'lat', 'long', 
         'first_phone_number', 'second_phone_number', 
-        'whatsapp_number'];
+        'whatsapp_number','telegram_number'];
 
     public function setLogoImageAttribute($value){
         $this->attributes['logo_image'] = $this->uploadFile($value, 'images/products', $this->attributes['logo_image'] ?? "");

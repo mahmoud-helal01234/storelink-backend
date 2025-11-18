@@ -46,7 +46,7 @@ class OrdersService
     {
         if ($this->isLoggedInUserStore()) {
             $storeId = $this->getLoggedInUserStoreId();
-            $orders = Order::with(['items.product', 'store', 'client', 'promoCode'])
+            $orders = Order::with(['items.product', 'store', 'client', 'promoCode', 'review'])
                 ->where('store_id', $storeId)
                 ->where('status', '!=', 'in_cart')
                 ->orderBy('created_at', 'DESC')
@@ -56,7 +56,7 @@ class OrdersService
         } else if ($this->isLoggedInUserClient()) {
 
             $clientId = $this->getLoggedInUserClientId();
-            $orders = Order::with(['items.product', 'store', 'client', 'promoCode'])
+            $orders = Order::with(['items.product', 'store', 'client', 'promoCode', 'review'])
                 ->where('client_id', $clientId)
                 ->where('status', '!=', 'in_cart')
                 ->orderBy('created_at', 'DESC')

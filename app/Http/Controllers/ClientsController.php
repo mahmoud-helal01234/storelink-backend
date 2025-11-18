@@ -19,6 +19,7 @@ use App\Http\Requests\Client\UpdateProfileRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
 use App\Http\Requests\Client\ForgetPasswordRequest;
 use App\Http\Requests\Client\ToggleActivationRequest;
+use App\Http\Requests\Client\ClientSocialLoginRequest;
 use App\Http\Requests\Client\UpdateClientProfileRequest;
 
 class ClientsController extends Controller
@@ -121,37 +122,14 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function socialLogin(Request $request)
+    public function socialLogin(ClientSocialLoginRequest $request)
     {
 
-
-        echo json_encode($user);
-        exit();
-        // Getting or creating user from db
-        $userFromDb = User::firstOrCreate(
-            [
-                'provider_id' => $user->getId(),
-                'provider_name' => $request->provider ?? "google",
-            ],
-            [
-                'email' => $user->getEmail(),
-                'email_verified_at' => now(),
-                'name' => $user->offsetGet('given_name') . ' ' . $user->offsetGet('family_name'),
-                'provider_id' => $user->getId()
-            ]
-        );
-
-        // Returning response
-        try {
-            $token = $userFromDb->createToken('Social Token')->plainTextToken;
-        } catch (ClientException $exception) {
-
-            exit();
-            return response()->json(['message' => 'Invalid credentials provided.'], 422);
-        }
-
-        $response = ['token' => $token, 'message' => 'Successful'];
-        return response()->json($response, 200);
+        $user = $request->validated();
+        $LoggedInUser = $this->clientsService->socialLogin($user);
+        return $this->apiResponse($LoggedInUser, true, __('success.login'));
+        
+       
     }
 
 

@@ -59,7 +59,8 @@ class StoresService
             'address',
             'first_phone_number',
             'second_phone_number',
-            'whatsapp_number'
+            'whatsapp_number',
+            'telegram_number'
         ]);
 
 
@@ -105,7 +106,8 @@ class StoresService
             'address',
             'first_phone_number',
             'second_phone_number',
-            'whatsapp_number'
+            'whatsapp_number',
+            'telegram_number'
         ]);
 
         $store['user_id'] = $user->id;

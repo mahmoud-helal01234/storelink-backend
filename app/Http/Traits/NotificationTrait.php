@@ -15,8 +15,9 @@ trait NotificationTrait
             "ar" => $data_send["title_ar"],
             "en" => $data_send["title_en"]
         ]; //<---- this will add heading
+        
         $fields = array(
-            'app_id' => 'ab4cc51f-a93d-46db-99e3-d31408be0f72',
+            'app_id' => '5f7b8f35-5f56-40c2-936c-762d6ed404f8',
             'data' => $data_send,
             'isAndroid'=>true,
             'isIos'=>true,

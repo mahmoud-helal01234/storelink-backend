@@ -135,12 +135,12 @@ class CategoriesService
         Log::info("start delete category");
 
         $category = $this->getById($id);
-
+        try {
             DB::beginTransaction();
             $this->deleteCategoryProducts($id);
             $category->delete();
             DB::commit();
-        try {
+        
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
