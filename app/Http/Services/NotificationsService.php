@@ -12,13 +12,13 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class NotificationsService
 {
 
-    use ResponsesTrait,LoggedInUserTrait,NotificationTrait;
+    use ResponsesTrait, LoggedInUserTrait, NotificationTrait;
 
     public function get()
     {
 
         return Notification::with('user')
-        ->where('user_id', $this->getLoggedInUser()->id)->get();
+            ->where('user_id', $this->getLoggedInUser()->id)->get();
     }
 
     public function getById($id)
@@ -30,25 +30,33 @@ class NotificationsService
         return $notification;
     }
 
-    public function create($notification,$app = "client") {
+    public function create($notification, $app = "client")
+    {
 
-
-        $createdNotification = Notification::create($notification);
-        $this->sendNotification(
-            [
-                "title_ar"=>$notification['title_ar'],
-                "title_en"=>$notification['title_en'],
-                "body_ar"=>$notification['body_ar'],
-                "body_en"=>$notification['body_en']],
-            [User::where('id',$notification['user_id'])->first()->one_signal_device_id],$app
-        );
-        return $createdNotification;
         try {
 
+            $createdNotification = Notification::create($notification);
+            $oneSignalDeviceId = 
+            User::where('id', $notification['user_id'])->first()->one_signal_device_id;
+            if ($oneSignalDeviceId == null)
+                return $createdNotification;
+
+            $this->sendNotification(
+                [
+                    "title_ar" => $notification['title_ar'],
+                    "title_en" => $notification['title_en'],
+                    "body_ar" => $notification['body_ar'],
+                    "body_en" => $notification['body_en']
+                ],
+                [
+                    User::where('id', $notification['user_id'])->first()->one_signal_device_id
+                ],
+                $app
+            );
+            return $createdNotification;
         } catch (\Exception $ex) {
 
-            throw new HttpResponseException($this->apiResponse(status:false));
-
+            throw new HttpResponseException($this->apiResponse(status: false));
         }
     }
 
@@ -57,22 +65,22 @@ class NotificationsService
 
         $notification = $this->getById($id);
 
-        $this->canUserDeleteNotification($this->getLoggedInUser(),$notification);
+        $this->canUserDeleteNotification($this->getLoggedInUser(), $notification);
         try {
 
-        $notification->delete();
-    } catch (\Exception $ex) {
+            $notification->delete();
+        } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
-    }
+        }
     }
 
-    public function canUserDeleteNotification($user,$notification){
+    public function canUserDeleteNotification($user, $notification)
+    {
 
-        if($user->role == "admin" || $user->id == $notification->user_id)
+        if ($user->role == "admin" || $user->id == $notification->user_id)
             return;
         else
-            throw new HttpResponseException($this->apiResponse(status:false));
-
+            throw new HttpResponseException($this->apiResponse(status: false));
     }
 }

@@ -15,22 +15,7 @@ use App\Http\Services\NotificationsService;
 */
 
 Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], function () {
-    Route::get('ping', function () {
-
-        $notificationsService = new NotificationsService();
-
-        $notificationsService->create([
-            'user_id' => 2,
-            'order_id' => 2,
-            'title_en' => "New order placed #" . 2,
-            'title_ar' => "تم تقديم طلب جديد " . 2,
-            'body_en' => "A new order has been placed by " . "Client Name",
-            'body_ar' => "تم تقديم طلب جديد بواسطة " . "client name",
-        ], "store");
-
-
-        return response()->json(['message' => 'pong'], 200);
-    });
+    Route::get('notify', 'NotificationsController@test');
     Route::post('login', 'AuthController@login'); // dashboard
 
     Route::post('client/login', 'ClientsController@login');

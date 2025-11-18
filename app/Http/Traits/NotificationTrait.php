@@ -13,6 +13,7 @@ trait NotificationTrait
             $appId = "8a237384-f99a-4417-8fde-ccb2f27302b7";
             $token = "os_v2_org_diuwfw7ktjgpfeokx5ol7sejaypennrkglmeljvbuko6gnwhv2outydexfbjzalmjr4kcb7qgjrg437is3q7pt32kry43mthwgiu6tq";
         }
+
         $content =
         [
             "ar" => $data_send["body_ar"],
@@ -29,9 +30,9 @@ trait NotificationTrait
         $fields = array(
             'app_id' => $appId,
             'data' => $data_send,
-            'isAndroid'=>true,
-            'isIos'=>false,
-            'content_available'=>true,
+            'isAndroid' => true,
+            'isIos' => false, // set to true after ios creation
+            'content_available' => true,
             'small_icon'    => 'ic_launcher-web',
             //'large_icon' =>"ic_launcher_round.png",
             'contents' => $content,
@@ -41,13 +42,9 @@ trait NotificationTrait
         if(empty($users))
         {
             $fields['included_segments']=array('All');
-        }else
+        } else
         {
-            $fields['include_player_ids'] = ["4396245f-a13b-4c9e-b68c-bbf018dd4763"];
-
-            // $fields['include_player_ids'] = $users;
-            // dd($users);
-
+            $fields['include_player_ids'] = $users;
         }
 
         $fields = json_encode($fields);

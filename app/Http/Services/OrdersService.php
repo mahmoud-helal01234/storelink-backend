@@ -270,7 +270,7 @@ class OrdersService
             'title_ar' => "تم تقديم طلب جديد " . $order->id,
             'body_en' => "A new order has been placed by " . $order->client->name,
             'body_ar' => "تم تقديم طلب جديد بواسطة " . $order->client->name
-        ]);
+        ],app:"store");
 
         return $order;
     }
