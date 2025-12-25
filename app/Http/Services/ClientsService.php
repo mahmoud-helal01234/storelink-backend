@@ -245,12 +245,12 @@ class ClientsService
     public function socialLogin($data)
     {
 
-        // $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
-        // $email = $providerUser->getEmail();
-        // $name = $providerUser->getName();
+        $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        $email = $providerUser->getEmail();
+        $name = $providerUser->getName();
         
-        $email = "client@gmail.com";
-        $name = "client name";
+        // $email = "client@gmail.com";
+        // $name = "client name";
         
         // if email not found then register them in the system with complete_data = false
         $user = User::where('email', $email)->first();

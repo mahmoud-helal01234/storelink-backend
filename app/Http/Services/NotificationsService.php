@@ -46,15 +46,16 @@ class NotificationsService
                     "title_ar" => $notification['title_ar'],
                     "title_en" => $notification['title_en'],
                     "body_ar" => $notification['body_ar'],
-                    "body_en" => $notification['body_en']
+                    "body_en" => $notification['body_en'],
+                    "notification_type" => "order_status_changed",
+                    "order_id" => $notification['order_id']
                 ],
-                [
-                    User::where('id', $notification['user_id'])->first()->one_signal_device_id
-                ],
+                [$oneSignalDeviceId],
                 $app
             );
             return $createdNotification;
-        } catch (\Exception $ex) {
+        }
+         catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(status: false));
         }

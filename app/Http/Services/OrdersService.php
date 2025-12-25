@@ -586,6 +586,7 @@ class OrdersService
                 'body_en' => "Your order has been delivered successfully",
             ];
         }
+        
         if(isset($notification)){
 
             $notificationsService = new NotificationsService();
@@ -596,7 +597,7 @@ class OrdersService
                 'title_ar' => $notification['title_ar'],
                 'body_en' => $notification['body_en'],
                 'body_ar' => $notification['body_ar']
-            ]);                          
+            ],'client');                          
 
         }
 

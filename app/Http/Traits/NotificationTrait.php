@@ -8,10 +8,10 @@ trait NotificationTrait
       function sendNotification($data_send=array(),$users=array(),$app = "client"){
         if($app == "store"){
             $appId = "5f7b8f35-5f56-40c2-936c-762d6ed404f8";
-            $token = "os_v2_app_l55y6nk7kzamfe3moyww5vae7drldsdnxtmecleovfujmd2kclverbb6gkle7thtj4wworvufrmfoldsi4i2xgg5fui7agev3z6clua";
+            $token = "os_v2_app_l55y6nk7kzamfe3moyww5vae7brwrbbm7oue7mfnaateho3avayymylimraca5bvjkgu7b45jfugqezt6jpo2noro5o3vpohc2st6ei";
         }else if($app == "client"){
             $appId = "8a237384-f99a-4417-8fde-ccb2f27302b7";
-            $token = "os_v2_org_diuwfw7ktjgpfeokx5ol7sejaypennrkglmeljvbuko6gnwhv2outydexfbjzalmjr4kcb7qgjrg437is3q7pt32kry43mthwgiu6tq";
+            $token = "os_v2_app_rirxhbhztjcbpd66zszpe4ycw6cxnaqsdnuusk5jestenvly2ghnu3v7lqz5uvlg3dcqnqsi7chwwb3mj2eqahbio57fb3sdkjtbciy";
         }
 
         $content =
@@ -49,10 +49,10 @@ trait NotificationTrait
 
         $fields = json_encode($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+        curl_setopt($ch, CURLOPT_URL, "https://api.onesignal.com/notifications");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json; charset=utf-8',
-            'Authorization: Basic '.$token
+            'Authorization: key '. $token
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
@@ -61,7 +61,7 @@ trait NotificationTrait
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 
         $response = curl_exec($ch);
-        var_dump($response);
+        // var_dump($response);
         curl_close($ch);
 
         return $response;
@@ -102,10 +102,10 @@ trait NotificationTrait
 
         $fields = json_encode($fields);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://onesignal.com/api/v1/notifications");
+        curl_setopt($ch, CURLOPT_URL, "https://api.onesignal.com/notifications");
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json; charset=utf-8',
-            'Authorization: Basic NTFiOThjY2YtODE2Ny00NjM1LWJjMDktNGQwYTJhNDJhNWZm'
+            'Authorization: key NTFiOThjY2YtODE2Ny00NjM1LWJjMDktNGQwYTJhNDJhNWZm'
         ));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);

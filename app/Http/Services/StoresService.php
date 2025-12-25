@@ -21,6 +21,7 @@ use App\Http\Services\Users\AuthService;
 use App\Models\DriversApp\UserDeviceToken;
 use App\Http\Resources\Auth\StoreLoginResource;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Laravel\Socialite\Facades\Socialite;
 
 class StoresService
 {
@@ -378,10 +379,10 @@ class StoresService
     public function socialLogin($data)
     {
 
-        // $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
-        // $email = $providerUser->getEmail();
+        $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        $email = $providerUser->getEmail();
         
-        $email = "store@gmail.com";
+        // $email = "store@gmail.com";
 
         // if email not found then register them in the system with complete_data = false
         $user = User::where('email', $email)->first();

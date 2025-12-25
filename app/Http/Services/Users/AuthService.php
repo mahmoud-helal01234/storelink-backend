@@ -97,8 +97,8 @@ class AuthService
             ['code' => $otp,'active' => 1, 'created_at' => now()]
         );
         
-        // Mail::to($email)
-        //     ->send(new OTPMail($otp));
+        Mail::to($email)
+            ->send(new OTPMail($otp));
         return $otp; // for testing purposes only
     }
 

@@ -32,7 +32,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('client/social_login', 'ClientsController@socialLogin');
 
     Route::get('news', 'NewsController@get');
-
+    Route::get('faqs', 'FAQsController@get');
+    Route::get('landing_page', 'LandingPageContentController@get');
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
         Route::get('client', 'ClientsController@get');
@@ -47,6 +48,12 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('news', 'NewsController@create');
         Route::post('news/update', 'NewsController@update');
         Route::delete('news/{id}', 'NewsController@delete');
+
+        Route::post('faqs', 'FAQsController@create');
+        Route::post('faqs/update', 'FAQsController@update');
+        Route::delete('faqs/{id}', 'FAQsController@delete');
+
+        Route::post('landing_page/update', 'LandingPageContentController@update');
     });
 
 
