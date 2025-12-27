@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Models\Product;
 use App\Models\OrderItem;
+use App\Models\ProductImage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\ResponsesTrait;
 use App\Models\CompaniesCategories;
@@ -27,7 +28,7 @@ class ProductsService
 
         $products = Product::where('category_id', $categoryId)->when($storeId, function ($q) use ($storeId) {
             $q->where('store_id', $storeId);
-        })->get();
+        })->with('images')->get();
 
         return $products;
     }
@@ -35,7 +36,7 @@ class ProductsService
     public function getById($id)
     {
 
-        $product = Product::where('id', $id)->first();
+        $product = Product::where('id', $id)->with('images')->first();
 
         if ($product == null)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
@@ -47,7 +48,18 @@ class ProductsService
     {
 
         $product['store_id'] = $this->getLoggedInUserStoreId();
+        DB::beginTransaction();
         $createdProduct = Product::create($product);
+        if ($product['images']) {
+            foreach ($product['images'] as $image) {
+                ProductImage::create([
+                    'image' => $image,
+                    'product_id' => $createdProduct->id,
+                ]);
+            }
+            DB::commit();
+        }
+        $createdProduct->load('images');
         return $createdProduct;
         try {
         } catch (\Exception $ex) {
@@ -58,11 +70,11 @@ class ProductsService
 
     public function canAccessProduct($product)
     {
-        
-        if($this->isLoggedInUserAdmin())
+
+        if ($this->isLoggedInUserAdmin())
             return true;
-        
-        if ($product->store_id != $this->getLoggedInUserStoreId() )
+
+        if ($product->store_id != $this->getLoggedInUserStoreId())
             throw new HttpResponseException($this->apiResponse(null, false, __('auth.authorization.not_authorized'), statusCode: 403));
     }
     public function update($newProduct)
@@ -75,7 +87,19 @@ class ProductsService
         try {
 
             $product->update($newProduct);
-
+            if (isset($newProduct['deleted_images'])) {
+                ProductImage::whereIn('id', $newProduct['deleted_images'])->delete();
+            }
+            if (isset($newProduct['images'])) {
+                foreach ($newProduct['images'] as $image) {
+                    ProductImage::create([
+                        'image' => $image,
+                        'product_id' => $product->id,
+                    ]);
+                }
+                DB::commit();
+            }
+            $product->load('images');
             return $product;
         } catch (\Exception $ex) {
 
@@ -100,14 +124,13 @@ class ProductsService
             DB::beginTransaction();
             $product = $this->getById($id);
             $this->canAccessProduct($product);
-
-            $product->delete();
-            OrderItem::where('product_id',$id)->whereHas('order',function ($query) {
-                $query->where('status','in_cart');
-            })->delete();
-    
-            DB::commit();
             
+            $product->delete();
+            OrderItem::where('product_id', $id)->whereHas('order', function ($query) {
+                $query->where('status', 'in_cart');
+            })->delete();
+
+            DB::commit();
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
@@ -118,10 +141,10 @@ class ProductsService
     {
 
         if ($product->store_id != $this->getLoggedInUserStoreId())
-            throw new HttpResponseException($this->apiResponse(null, false, __('auth.authorization.not_authorized'),statusCode: 403));
+            throw new HttpResponseException($this->apiResponse(null, false, __('auth.authorization.not_authorized'), statusCode: 403));
         return true;
     }
-    
+
 
     public function deleteWithRelations($id)
     {

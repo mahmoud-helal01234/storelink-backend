@@ -44,16 +44,20 @@ class UpdateRequest extends FormRequest
 
         return [
 
-            'id'               => 'required|numeric',
-            'name_en'          =>  'required|string|max:100',
-            'name_ar'          =>  'required|string|max:100',
-            'description_en'   =>  'required|string|max:500',
-            'description_ar'   =>  'required|string|max:500',
-            'category_id'   =>  "sometimes|numeric|exists:categories,id",
-            'image'         =>  'sometimes|nullable|' . FormRequestRulesConstant::ImageValidation,
-            'price'         =>  'required|numeric|min:0',
-            'offer_price'   =>  'sometimes|nullable|numeric|min:0'
-        ];
+            'id'                => 'required|numeric',
+            'name_en'           =>  'required|string|max:100',
+            'name_ar'           =>  'required|string|max:100',
+            'description_en'    =>  'required|string|max:500',
+            'description_ar'    =>  'required|string|max:500',
+            'category_id'       =>  "sometimes|numeric|exists:categories,id",
+            'image'             =>  'sometimes|nullable|' . FormRequestRulesConstant::ImageValidation,
+            'price'             =>  'required|numeric|min:0',
+            'offer_price'       =>  'sometimes|nullable|numeric|min:0',
+            'images'            =>  'sometimes|array',
+            'images.*'          =>  FormRequestRulesConstant::ImageValidation,
+            'deleted_images'    => 'sometimes|array',
+            'deleted_images.*'  => 'numeric|exists:product_images,id,product_id,' . request('id')
+        ];  
     }
 
     public function messages(): array

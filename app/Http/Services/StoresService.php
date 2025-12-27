@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\Review;
+use App\Models\WeekDay;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -18,10 +19,10 @@ use App\Http\Traits\FileUploadTrait;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Services\Users\AuthService;
+use Laravel\Socialite\Facades\Socialite;
 use App\Models\DriversApp\UserDeviceToken;
 use App\Http\Resources\Auth\StoreLoginResource;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Laravel\Socialite\Facades\Socialite;
 
 class StoresService
 {
@@ -272,7 +273,19 @@ class StoresService
                 'clients.name as client_name'
             ])
             ->get();
-
+            
+        $store->working_hours = WeekDay::leftJoin('store_working_hours', function ($join) use ($storeId) {
+            $join->on('week_days.id', '=', 'store_working_hours.week_day_id')
+                ->where('store_working_hours.store_id', $storeId);
+        })
+            ->orderBy('week_days.id')
+            ->select(
+                'week_days.*',
+                'store_working_hours.from',
+                'store_working_hours.to',
+                'store_working_hours.full_day'
+            )
+            ->get();
         if ($this->isLoggedInUserClient()) {
             $ordersService = new OrdersService();
             $order = Order::with('items')->where('client_id', $this->getLoggedInUserClientId())

@@ -14,10 +14,14 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
     use FileUploadTrait;
-    use ImagesTrait;
     
     protected $fillable = [
-        'category_id', 'store_id', 'name_en', 'name_ar', 'image', 'description_en', 'description_ar', 'price', 'offer_price'
+        'category_id', 
+        'store_id', 
+        'name_en', 'name_ar', 
+        'image',
+        'description_en', 'description_ar',
+        'price', 'offer_price'
     ];
 
     protected $hidden = ['deleted_at'];
@@ -40,5 +44,10 @@ class Product extends Model
         return $this->belongsTo(Store::class, 'store_id', 'user_id');
     }
 
+    public function images()
+    {
+
+        return $this->hasMany(ProductImage::class, 'product_id', 'id');
+    }
 
 }
