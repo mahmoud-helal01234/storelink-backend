@@ -34,6 +34,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::get('news', 'NewsController@get');
     Route::get('faqs', 'FAQsController@get');
     Route::get('landing_page', 'LandingPageContentController@get');
+    Route::get('terms_and_conditions', 'TermsAndConditionsController@get');
+    Route::get('privacy_policies', 'PrivacyPoliciesController@get');
+
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
         Route::get('client', 'ClientsController@get');
@@ -54,6 +57,14 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::delete('faqs/{id}', 'FAQsController@delete');
 
         Route::post('landing_page/update', 'LandingPageContentController@update');
+
+        Route::post('terms_and_conditions', 'TermsAndConditionsController@create');
+        Route::post('terms_and_conditions/update', 'TermsAndConditionsController@update');
+        Route::delete('terms_and_conditions/{id}', 'TermsAndConditionsController@delete');
+
+        Route::post('privacy_policies', 'PrivacyPoliciesController@create');
+        Route::post('privacy_policies/update', 'PrivacyPoliciesController@update');
+        Route::delete('privacy_policies/{id}', 'PrivacyPoliciesController@delete');
     });
 
 
@@ -78,6 +89,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::get('category/{categoryId}/store/', 'CategoriesController@deleteCategoryFromMyStore');
 
             Route::post('order/status', 'OrdersController@changeOrderStatus');
+
+            Route::post('store/working_hours/update', 'StoresWorkingHoursController@update');
         });
         Route::post('store/updateProfile', 'StoresController@updateProfile');
     });
@@ -99,6 +112,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('store/details', 'StoresController@getDetailsById');
 
         Route::get('store', 'StoresController@get');
+
+        Route::get('store/working_hours/{storeId}', 'StoresWorkingHoursController@get');
     });
 
     // start client only routes 
@@ -615,7 +630,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::delete('payment_method/{id}', 'PaymentMethodsController@delete');
             Route::get('payment_method/{id}/activate/{activationStatus}', 'PaymentMethodsController@toggleActivation');
 
-            Route::post('terms_and_conditions/update', 'TermsAndConditionsController@update');
 
             Route::post('cooperation_with_us_reason', 'CooperationWithUsReasonsController@create');
             Route::post('cooperation_with_us_reason/update', 'CooperationWithUsReasonsController@update');
@@ -653,7 +667,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::get('review', 'FloatingSocialLinksController@get');
 
         Route::get('payment_method', 'PaymentMethodsController@get');
-        Route::get('terms_and_conditions', 'TermsAndConditionsController@get');
         Route::get('cooperation_with_us_reason', 'CooperationWithUsReasonsController@get');
         Route::get('frequently_asked_question', 'FrequentlyAskedQuestionsController@get');
         Route::get('statistics_tag', 'StatisticsTagsController@get');

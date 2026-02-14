@@ -260,7 +260,7 @@ class StoresService
 
         $store = Store::where('user_id', $storeId)->with([
             'categories.products' => function ($query) use ($storeId) {
-                $query->where('store_id', $storeId);
+                $query->where('store_id', $storeId)->with('images');
             },
         ])->first();
         $store->reviews =  Review::join('orders', 'reviews.order_id', '=', 'orders.id')
@@ -312,7 +312,7 @@ class StoresService
         } else if ($this->isLoggedInUserAdmin()) {
 
             $store = Store::where('user_id', $storeId)
-                ->with('categories.products', 'promoCodes')->first();
+                ->with('categories.products.images', 'promoCodes')->first();
             $ordersService = new OrdersService();
             $store->orders = Order::with('items', 'review', 'client')->where('store_id', $storeId)
                 ->whereNot('status', 'in_cart')->get();
