@@ -36,7 +36,13 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::get('landing_page', 'LandingPageContentController@get');
     Route::get('terms_and_conditions', 'TermsAndConditionsController@get');
     Route::get('privacy_policies', 'PrivacyPoliciesController@get');
+    Route::get('stores_ads', 'StoreAdsController@get');
 
+    Route::group(['middleware' => ['authenticate:admin,store']], function () {
+        
+        Route::delete('stores_ads/{id}', 'StoreAdsController@delete');
+    
+    });
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
         Route::get('client', 'ClientsController@get');
@@ -65,6 +71,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('privacy_policies', 'PrivacyPoliciesController@create');
         Route::post('privacy_policies/update', 'PrivacyPoliciesController@update');
         Route::delete('privacy_policies/{id}', 'PrivacyPoliciesController@delete');
+        Route::get('stores_ads/{id}/activate/{activationStatus}', 'StoreAdsController@toggleActivation');
     });
 
 
@@ -91,6 +98,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('order/status', 'OrdersController@changeOrderStatus');
 
             Route::post('store/working_hours/update', 'StoresWorkingHoursController@update');
+
+            Route::post('stores_ads', 'StoreAdsController@create');
+            Route::post('stores_ads/update', 'StoreAdsController@update');
         });
         Route::post('store/updateProfile', 'StoresController@updateProfile');
     });
