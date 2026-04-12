@@ -75,6 +75,13 @@ class StoresController extends Controller
         return $this->apiResponse($store);
     }
 
+    public function getNearbyStores()
+    {
+
+        $store = $this->storesService->getNearbyStores();
+        return $this->apiResponse($store);
+    }
+
     public function getDetailsById()
     {
 

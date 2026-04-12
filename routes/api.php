@@ -131,6 +131,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::group(['middleware' => ['profile.completed']], function () {
             Route::post('client/me', 'ClientsController@me');
 
+            Route::get('store/nearby', 'StoresController@getNearbyStores');
             Route::post('order/addProductToCart', 'OrdersController@addProductToCart');
             Route::post('order/applyPromoCode', 'OrdersController@applyPromoCode');
             Route::post('order/cancelPromoCode', 'OrdersController@cancelPromoCode');

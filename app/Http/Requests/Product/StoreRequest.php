@@ -51,7 +51,7 @@ class StoreRequest extends FormRequest
                 'image'         =>  'required|' . FormRequestRulesConstant::ImageValidation,
                 'price'         =>  'required|numeric|min:0',
                 'offer_price'   =>  'sometimes|nullable|numeric|min:0',
-                'images'    =>  'sometimes|array',
+                'images'    =>  'sometimes|nullable|array',
                 'images.*'  =>  FormRequestRulesConstant::ImageValidation
             ];
     }

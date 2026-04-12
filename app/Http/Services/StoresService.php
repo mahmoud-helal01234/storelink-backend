@@ -237,6 +237,41 @@ class StoresService
         return $stores;
     }
 
+    public function getNearbyStores()
+    {
+        Log::info("start get stores");
+
+        $stores = [];
+
+        if ($this->isLoggedInUserClient()) {
+            $clientId = $this->getLoggedInUserClientId();
+            $clientsService = new ClientsService();
+            $client = $clientsService->getById($clientId);
+            $lat = $client->lat;
+            $long = $client->long;
+            // Haversine formula in meters (earth radius = 6,371,000 m)
+            $haversine = "(6371000 * acos(least(1, cos(radians(?)) 
+                    * cos(radians(stores.lat)) 
+                    * cos(radians(stores.long) - radians(?)) 
+                    + sin(radians(?)) 
+                    * sin(radians(stores.lat)))))";
+
+            // by category id
+            $stores = Store::select('stores.*')
+                ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
+                ->withAvg(['orders as avg_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
+                        ->join('reviews', 'orders.id', '=', 'reviews.order_id');
+                }], 'avg_rating')
+                ->orderBy('distance', 'asc');
+            
+            $stores = $stores->limit(20)->get();
+        } 
+        return $stores;
+    }
+
+
+
     public function getById($id)
     {
 

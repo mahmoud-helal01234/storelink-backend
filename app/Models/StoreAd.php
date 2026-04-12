@@ -17,7 +17,8 @@ class StoreAd extends Model
 
     protected $fillable = [
 
-        'id', 'image', 'description_ar','description_en','store_id', 'created_at', 'updated_at','active'];
+        'id', 'image', 'description_ar','description_en','store_id', 'created_at', 'updated_at','active'
+    ];
 
     public function setImageAttribute($value){
         $this->attributes['image'] = $this->uploadFile($value, 'images/store_ads', $this->attributes['image'] ?? "");

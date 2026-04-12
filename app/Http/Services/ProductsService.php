@@ -50,16 +50,16 @@ class ProductsService
         $product['store_id'] = $this->getLoggedInUserStoreId();
         DB::beginTransaction();
         $createdProduct = Product::create($product);
-        if ($product['images']) {
+        if (isset($product['images']) && $product['images'] != null && count($product['images']) > 0) {
             foreach ($product['images'] as $image) {
                 ProductImage::create([
                     'image' => $image,
                     'product_id' => $createdProduct->id,
                 ]);
             }
-            DB::commit();
+            $createdProduct->load('images');
         }
-        $createdProduct->load('images');
+        DB::commit();
         return $createdProduct;
         try {
         } catch (\Exception $ex) {

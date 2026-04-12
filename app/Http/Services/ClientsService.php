@@ -140,7 +140,7 @@ class ClientsService
 
         $clientId = $this->getLoggedInUser()->id;
         $client = $this->getById($clientId);
-        $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone']);
+        $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone','name']);
         
         $client->update($newClient);
         
