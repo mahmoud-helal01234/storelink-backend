@@ -16,7 +16,9 @@ class LandingPageContent extends Model
     protected $fillable = [
 
         "about_us_content_ar",
-        "about_us_content_en"
+        "about_us_content_en",
+        "description_ar",
+        "description_en"
     ];
 
     public $timestamps = false;

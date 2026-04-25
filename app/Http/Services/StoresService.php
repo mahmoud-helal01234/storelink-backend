@@ -2,27 +2,31 @@
 
 namespace App\Http\Services;
 
-use stdClass;
-use Exception;
-use App\Models\User;
-use App\Models\Order;
-use App\Models\Store;
-use App\Models\Review;
-use App\Models\WeekDay;
-use App\Models\Category;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Http\Traits\ResponsesTrait;
-use Illuminate\Support\Facades\Log;
+use App\Http\Constants\OrderStatusesConstant;
+use App\Http\Resources\Auth\StoreLoginResource;
+use App\Http\Services\Users\AuthService;
 use App\Http\Traits\ArraySliceTrait;
 use App\Http\Traits\FileUploadTrait;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Traits\LoggedInUserTrait;
-use App\Http\Services\Users\AuthService;
-use Laravel\Socialite\Facades\Socialite;
+use App\Http\Traits\ResponsesTrait;
+use App\Models\Category;
 use App\Models\DriversApp\UserDeviceToken;
-use App\Http\Resources\Auth\StoreLoginResource;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\PromoCode;
+use App\Models\Review;
+use App\Models\Store;
+use App\Models\StoreCategory;
+use App\Models\User;
+use App\Models\WeekDay;
+use Exception;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Laravel\Socialite\Facades\Socialite;
+use stdClass;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class StoresService
 {
@@ -298,6 +302,9 @@ class StoresService
                 $query->where('store_id', $storeId)->with('images');
             },
         ])->first();
+        if($store == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
+        }
         $store->reviews =  Review::join('orders', 'reviews.order_id', '=', 'orders.id')
             ->join('clients', 'orders.client_id', '=', 'clients.user_id')
             ->where('orders.store_id', $storeId)
@@ -355,6 +362,38 @@ class StoresService
         if ($store == null)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
         return $store;
+    }
+
+    public function getMyStatistics(){
+        $storeId = $this->getLoggedInUserStoreId();
+        $categoriesCount = StoreCategory::where('store_id', $storeId)->count();
+        $promoCodesCount = PromoCode::where('store_id',$storeId)->count();
+        $productsCount = Product::where('store_id',$storeId)->count();
+        $activeOrdersCount = Order::where('store_id', $storeId)->whereNot('status', 'in_cart')->whereNot('status', 'returned')->whereNot('status','canceled')->count();
+        
+        $statuses = OrderStatusesConstant::statuses;
+
+        $rawCounts = Order::where('store_id', $storeId)
+            ->select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $ordersPerStatusCount = [];
+
+        foreach ($statuses as $status) {
+            $ordersPerStatusCount[$status] = $rawCounts[$status] ?? 0;
+        }
+
+
+        return [
+            'categories_count' => $categoriesCount,
+            'promo_codes_count' => $promoCodesCount,
+            'active_orders_count' => $activeOrdersCount,
+            'products_count' => $productsCount,
+            'orders_per_status_count' => $ordersPerStatusCount
+        ];
+
     }
 
     public function create($store)

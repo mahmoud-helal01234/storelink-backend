@@ -79,6 +79,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
         Route::group(['middleware' => ['profile.completed']], function () {
+            
+            Route::get('store/my_statistics', 'StoresController@getMyStatistics');
             Route::post('store/me', 'StoresController@me');
 
             Route::get('promo_code', 'PromoCodesController@get');
