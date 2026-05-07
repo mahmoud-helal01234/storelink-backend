@@ -33,8 +33,8 @@ class UpdateRequest extends FormRequest
 
         return [
           
-            'about_us_content_ar'          =>  'required|string|max:5000',
-            'about_us_content_en'          =>  'required|string|max:5000',
+            'about_us_content_ar'          =>  'required|string|max:10000',
+            'about_us_content_en'          =>  'required|string|max:10000',
             'description_ar'               =>  'required|string|max:5000',
             'description_en'               =>  'required|string|max:5000'
         ];

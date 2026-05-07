@@ -43,10 +43,10 @@ class StoreRequest extends FormRequest
         return
             [
 
-                'name_en'          =>  'required|string|max:100',
-                'name_ar'          =>  'required|string|max:100',
-                'description_en'   =>  'required|string|max:500',
-                'description_ar'   =>  'required|string|max:500',
+                'name_en'          =>  'required|string|max:150',
+                'name_ar'          =>  'required|string|max:150',
+                'description_en'   =>  'required|string|max:1000',
+                'description_ar'   =>  'required|string|max:1000',
                 'category_id'   =>  "required|numeric|exists:categories,id",
                 'image'         =>  'required|' . FormRequestRulesConstant::ImageValidation,
                 'price'         =>  'required|numeric|min:0',

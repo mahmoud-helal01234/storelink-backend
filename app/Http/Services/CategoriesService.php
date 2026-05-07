@@ -138,6 +138,7 @@ class CategoriesService
         try {
             DB::beginTransaction();
             $this->deleteCategoryProducts($id);
+            $this->deleteCategoryAssignmentRelationsToStores($id);
             $category->delete();
             DB::commit();
         
@@ -152,6 +153,13 @@ class CategoriesService
 
         $this->proudctsService = new ProductsService;
         $this->proudctsService->deleteByCategoryId(categoryId: $categoryId);
+    }
+
+    public function deleteCategoryAssignmentRelationsToStores($categoryId)
+    {
+
+        $category = $this->getById($categoryId);
+        $category->stores()->detach();
     }
 
     public function deleteRelationsWithCategory($categoryId)

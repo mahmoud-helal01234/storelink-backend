@@ -369,7 +369,7 @@ class StoresService
         $categoriesCount = StoreCategory::where('store_id', $storeId)->count();
         $promoCodesCount = PromoCode::where('store_id',$storeId)->count();
         $productsCount = Product::where('store_id',$storeId)->count();
-        $activeOrdersCount = Order::where('store_id', $storeId)->whereNot('status', 'in_cart')->whereNot('status', 'returned')->whereNot('status','canceled')->count();
+        $activeOrdersCount = Order::where('store_id', $storeId)->whereNot('status', 'in_cart')->whereNot('status', 'returned')->whereNot('status','canceled')->whereNot('status','delivered')->count();
         
         $statuses = OrderStatusesConstant::statuses;
 

@@ -32,8 +32,8 @@ class UpdateRequest extends FormRequest
         return [
 
             'id'                => 'required|numeric|exists:stores_ads,id',
-            'description_ar'    =>  'sometimes|nullable|string|max:100',
-            'description_en'    =>  'sometimes|nullable|string|max:100',
+            'description_ar'    =>  'sometimes|nullable|string|max:150',
+            'description_en'    =>  'sometimes|nullable|string|max:150',
             'image'             =>  'sometimes|'.FormRequestRulesConstant::ImageValidation
         ];
     }

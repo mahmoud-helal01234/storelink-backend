@@ -45,10 +45,10 @@ class UpdateRequest extends FormRequest
         return [
 
             'id'                => 'required|numeric',
-            'name_en'           =>  'required|string|max:100',
-            'name_ar'           =>  'required|string|max:100',
-            'description_en'    =>  'required|string|max:500',
-            'description_ar'    =>  'required|string|max:500',
+            'name_en'           =>  'required|string|max:150',
+            'name_ar'           =>  'required|string|max:150',
+            'description_en'    =>  'required|string|max:1000',
+            'description_ar'    =>  'required|string|max:1000',
             'category_id'       =>  "sometimes|numeric|exists:categories,id",
             'image'             =>  'sometimes|nullable|' . FormRequestRulesConstant::ImageValidation,
             'price'             =>  'required|numeric|min:0',

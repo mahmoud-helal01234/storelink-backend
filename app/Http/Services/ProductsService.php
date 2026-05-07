@@ -85,7 +85,9 @@ class ProductsService
         $product['store_id'] = $this->getLoggedInUserStoreId();
 
         try {
-
+            if(!isset($newProduct['offer_price']) || $newProduct['offer_price'] == 0) {
+                $newProduct['offer_price'] = null;
+            }
             $product->update($newProduct);
             if (isset($newProduct['deleted_images'])) {
                 ProductImage::whereIn('id', $newProduct['deleted_images'])->delete();

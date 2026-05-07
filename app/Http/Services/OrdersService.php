@@ -256,6 +256,7 @@ class OrdersService
         $totalPrice += $order->delivery_charge;
 
         $order->total_price = $totalPrice;
+        
         // set location
         $order->lat = $order->client->lat;
         $order->long = $order->client->long;

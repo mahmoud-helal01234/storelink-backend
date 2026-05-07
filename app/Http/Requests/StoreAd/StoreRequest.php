@@ -33,8 +33,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'description_ar'   =>  'sometimes|nullable|string|max:100',
-            'description_en'   =>  'sometimes|nullable|string|max:100',
+            'description_ar'   =>  'sometimes|nullable|string|max:150',
+            'description_en'   =>  'sometimes|nullable|string|max:150',
             'image'  =>  'required|'.FormRequestRulesConstant::ImageValidation
         ];
     }

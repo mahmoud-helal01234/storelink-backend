@@ -18,7 +18,7 @@ class NotificationsService
     {
 
         return Notification::with('user')
-            ->where('user_id', $this->getLoggedInUser()->id)->get();
+            ->where('user_id', $this->getLoggedInUser()->id)->orderBy('created_at', 'DESC')->get();
     }
 
     public function getById($id)
