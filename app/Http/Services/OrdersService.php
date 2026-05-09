@@ -170,10 +170,11 @@ class OrdersService
             }
         }
 
-        // get delivery charge
+        // get delivery charge     
         $order->delivery_charge = $order->store->delivery_charge;
 
-        $order->total_price += $order->delivery_charge;
+        if($order->delivery_charge > 0)
+            $order->total_price += $order->delivery_charge;
 
         return $order;
     }
@@ -209,7 +210,8 @@ class OrdersService
         // get delivery charge
         $order->delivery_charge = $order->store->delivery_charge;
 
-        $totalPrice += $order->delivery_charge;
+        if($order->delivery_charge > 0)
+            $totalPrice += $order->delivery_charge;
 
         return $totalPrice;
     }
@@ -251,9 +253,11 @@ class OrdersService
         }
 
         // get delivery charge
+        
         $order->delivery_charge = $order->store->delivery_charge;
 
-        $totalPrice += $order->delivery_charge;
+        if($order->delivery_charge > 0)
+            $totalPrice += $order->delivery_charge;
 
         $order->total_price = $totalPrice;
         
@@ -1390,43 +1394,7 @@ class OrdersService
         }
     }
 
-    public function changeCompany($order)
-    {
-
-        try {
-            $newCompanyId = $order['company_id'];
-            $order = $this->getById($order['id']);
-            switch ($order['type']) {
-
-                case "easy":
-
-                    $order->update(['company_id' => $newCompanyId]);
-                    break;
-                case "items":
-
-                    DB::transaction(function () use ($order) {
-                        $order->update(['type' => 'easy']);
-                        $content = '';
-                        foreach ($order->items as $item) {
-
-                            $content .= $item->productOption->name_ar . ' => ' . $item->quantity . ' \n ';
-                        }
-
-                        EasyOrder::create(["order_id" => $order->id, "content" => $content]);
-                        OrderItem::where('order_id', $order->id)->delete();
-                    });
-
-                    break;
-            }
-
-            return;
-        } catch (\Exception $ex) {
-
-            throw new HttpResponseException($this->apiResponse(status: false));;
-        }
-    }
-
-
+    
     public function rate($data)
     {
 
@@ -1606,41 +1574,5 @@ class OrdersService
                 //         return true;
         }
         return false;
-    }
-
-
-
-    public function canUserCreateOrderWithCompanyIdAndTransportationPeriodAssignedToDriver($transportationPeriodsAssignedToDriverId, $driverId, $companyId, $pickupDate)
-    {
-
-        // check if driver_id is exist in transportation_periods_assigned_to_drivers table
-
-        $transportationPeriodsAssignedToDriver = TransportationPeriodAssignedToDriver::find($transportationPeriodsAssignedToDriverId);
-        //dd($transportationPeriodsAssignedToDriver);
-        if ($transportationPeriodsAssignedToDriver->driver_id != $driverId) {
-
-            throw new HttpResponseException($this->apiResponse(null, false, __('driver_dosent_belong_to_period')));
-        }
-        if (!($transportationPeriodsAssignedToDriver->transportationPeriod->user_id == $companyId /*|| $transportationPeriodsAssignedToDriver->transportationPeriod->user_id ==*/)) {
-
-            throw new HttpResponseException($this->apiResponse(null, false, __('period_dosent_belong_to_company')));
-        }
-        if ($this->driverCapacity($transportationPeriodsAssignedToDriver, $pickupDate))
-            return true;
-    }
-    //make function check driver capacity take two parameter transportationPeriodsAssignedToDriver and pickupdate select last order from orders where driver id = transportationPeriodsAssignedToDriver
-    public function driverCapacity($transportationPeriodsAssignedToDriver, $pickupDate)
-    {
-
-        $driverOrderInPeriod = Order::where('delivery_driver_assigned_to_transportation_period_id', $transportationPeriodsAssignedToDriver->driver_id)
-            ->orwhere('pickup_driver_assigned_to_transportation_period_id', $transportationPeriodsAssignedToDriver->driver_id)
-            ->where('pickup_date', $pickupDate)->count();
-        //dd($driverOrderInPeriod >= $transportationPeriodsAssignedToDriver->capacity);
-
-        if ($driverOrderInPeriod >= $transportationPeriodsAssignedToDriver->capacity)
-            throw new HttpResponseException($this->apiResponse(null, false, __('driver_has_full_capacity')));
-
-        // return true;
-
     }
 }
