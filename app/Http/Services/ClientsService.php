@@ -2,20 +2,22 @@
 
 namespace App\Http\Services;
 
-use App\Models\User;
-use App\Models\Client;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Log;
+use App\Http\Resources\Auth\ClientLoginResource;
+use App\Http\Services\Users\AuthService;
 use App\Http\Traits\ArraySliceTrait;
 use App\Http\Traits\FileUploadTrait;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 use App\Http\Traits\LoggedInUserTrait;
-use App\Http\Services\Users\AuthService;
-use Laravel\Socialite\Facades\Socialite;
-use App\Http\Resources\Auth\ClientLoginResource;
+use App\Models\Client;
+use App\Models\Order;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class ClientsService
@@ -236,10 +238,18 @@ class ClientsService
             $avatarPath = $client->avatar;
             $client->delete();
             $this->deleteFile($avatarPath);
+            $this->deleteRelatedData($id);
         } catch (\Exception $ex) {
 
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.cannot_delete')));
         }
+    }
+    private function deleteRelatedData($clientId)
+    {
+        // delete related data such as orders, reviews, etc.
+        Order::where('client_id', $clientId)->delete();
+        Review::where('client_id', $clientId)->delete();
+        
     }
 
     public function socialLogin($data)

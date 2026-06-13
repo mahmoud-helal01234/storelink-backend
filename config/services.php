@@ -26,7 +26,12 @@ return [
         //'redirect' => env('FACEBOOK_REDIRECT_URI'),
         'redirect' => null
     ],
-
+    'apple' => [
+        'client_id' => env('APPLE_CLIENT_ID'),
+        'client_secret' => env('APPLE_CLIENT_SECRET'),
+        //'redirect' => env('APPLE_REDIRECT_URI'),
+        'redirect' => null
+    ],
 
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),

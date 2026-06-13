@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\PromoCode;
-use App\Http\Traits\ImagesTrait;
+use App\Http\enums\DeliveryType;
 use App\Http\Traits\FileUploadTrait;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Http\Traits\ImagesTrait;
+use App\Models\PromoCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends BaseModel
 {
@@ -26,8 +27,10 @@ class Order extends BaseModel
         'price',
         'promo_code_discount',
         'delivery_charge',
-        'total_price'
+        'total_price',
+        'delivery_type'
     ];
+
 
     public function items()
     {

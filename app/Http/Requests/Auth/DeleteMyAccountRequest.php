@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Store;
+namespace App\Http\Requests\Auth;
 
-use App\Http\Traits\ResponsesTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Http\Traits\ResponsesTrait;
 
-class StoreSocialLoginRequest extends FormRequest
+class DeleteMyAccountRequest extends FormRequest
 {
     use ResponsesTrait;
 
@@ -30,18 +30,16 @@ class StoreSocialLoginRequest extends FormRequest
     {
 
         return [
-            'access_token' => 'required',
-            'provider' => 'required|string|in:google,facebook,apple',
+
+            'email' => 'required|string|email|exists:users,email,deleted_at,NULL',
+            'otp' => 'required|string|size:6'
         ];
     }
 
     public function messages(): array
     {
-
         return [
-            'access_token.required' => __('validation.token.required'),
-            'provider.required' => __('validation.provider.required'),
-            'provider.in' => __('validation.provider.in'),
+            'email.required' => __('validation.email.required')
         ];
     }
 

@@ -12,6 +12,7 @@ use App\Http\Traits\ResponsesTrait;
 use App\Models\Category;
 use App\Models\DriversApp\UserDeviceToken;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\PromoCode;
 use App\Models\Review;
@@ -66,7 +67,8 @@ class StoresService
             'first_phone_number',
             'second_phone_number',
             'whatsapp_number',
-            'telegram_number'
+            'telegram_number',
+            'delivery_type'
         ]);
 
 
@@ -115,7 +117,8 @@ class StoresService
             'first_phone_number',
             'second_phone_number',
             'whatsapp_number',
-            'telegram_number'
+            'telegram_number',
+            'delivery_type'
         ]);
 
         $store['user_id'] = $user->id;
@@ -337,7 +340,7 @@ class StoresService
             if ($order != null) {
 
                 // calculate total price for cart order
-                $order->total_price = $ordersService->calculateCartOrderTotalPrice($order);
+                $order = $ordersService->calculateCartOrderPrices($order);
                 $cartOrder = new stdClass();
                 $cartOrder->total_price = $order->total_price;
                 $cartOrder->items = [];
@@ -436,7 +439,7 @@ class StoresService
 
         try {
 
-            // $this->deleteRelationsWithStore($store->id);
+            $this->deleteRelationsWithStore($store->id);
             $store->delete();
         } catch (\Exception $ex) {
 
@@ -448,7 +451,14 @@ class StoresService
     {
 
         $this->proudctsService = new ProductsService;
-        $this->proudctsService->deleteChildren(storeId: $storeId);
+        Product::where('store_id', $storeId)->delete();
+        StoreCategory::where('store_id', $storeId)->delete();
+        PromoCode::where('store_id', $storeId)->delete();
+        OrderItem::whereHas('order', function($q) use($storeId){
+            $q->where('store_id', $storeId);
+        })->delete();
+        Order::where('store_id', $storeId)->delete();
+        
     }
 
     public function deleteChildren($mainStoreId = null)

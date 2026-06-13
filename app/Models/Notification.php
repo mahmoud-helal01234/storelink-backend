@@ -2,24 +2,21 @@
 
 namespace App\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Notification extends BaseModel
 {
-
-    protected $table = "notifications";
     use HasFactory;
 
     protected $fillable = [
-
-        'user_id', 'title', 'body', 'image'
+        'id', 'user_id', 'title_ar', 'title_en', 'body_ar', 'body_en', 'created_at'
     ];
 
-    public function setImageAttribute($value)
+    public function user()
     {
 
-        $this->attributes['image'] = $this->uploadFile($value, 'images/notifications', $this->attributes['image'] ?? "");
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
-
 
 }

@@ -31,7 +31,7 @@ class SendOTPRequest extends FormRequest
 
         return [
 
-            'email' => 'required|string|email'
+            'email' => 'required|string|email|exists:users,email,deleted_at,NULL'
         ];
     }
 

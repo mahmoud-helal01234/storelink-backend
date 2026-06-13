@@ -31,7 +31,7 @@ class ClientSocialLoginRequest extends FormRequest
 
         return [
             'access_token' => 'required',
-            'provider' => 'required|string|in:google,facebook'
+            'provider' => 'required|string|in:google,facebook,apple',
         ];
     }
 

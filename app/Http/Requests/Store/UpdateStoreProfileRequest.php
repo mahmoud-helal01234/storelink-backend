@@ -2,12 +2,13 @@
 
 namespace App\Http\Requests\Store;
 
-use App\Http\Traits\ResponsesTrait;
-use App\Http\Traits\LoggedInUserTrait;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
 use App\Http\Constants\FormRequestRulesConstant;
+use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Traits\ResponsesTrait;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateStoreProfileRequest extends FormRequest
 {
@@ -45,7 +46,9 @@ class UpdateStoreProfileRequest extends FormRequest
             'first_phone_number'    => 'required|string|max:13',
             'second_phone_number'   => 'sometimes|string|max:13',
             'whatsapp_number'       => 'sometimes|string|max:13',
-            'telegram_number'       => 'sometimes|string|max:13'
+            'telegram_number'       => 'sometimes|string|max:13',
+            'delivery_type'         => ['required', Rule::in(['no_delivery', 'free_delivery', 'based_on_location', 'fixed_price'])]
+
         ];
     }
 

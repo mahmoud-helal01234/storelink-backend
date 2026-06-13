@@ -12,19 +12,30 @@ class Store extends Model
     use FileUploadTrait;
     protected $primaryKey = 'user_id';
 
-    protected $hidden = [ 'deleted_at'];
     protected $fillable = [
-        
-        'user_id', 'name_en', 'name_ar', 'logo_image', 'cover_image', 
-        'delivery_charge', 'lat', 'long', 
-        'first_phone_number', 'second_phone_number', 
-        'whatsapp_number','telegram_number'];
 
-    public function setLogoImageAttribute($value){
+        'user_id',
+        'name_en',
+        'name_ar',
+        'logo_image',
+        'cover_image',
+        'delivery_charge',
+        'lat',
+        'long',
+        'first_phone_number',
+        'second_phone_number',
+        'whatsapp_number',
+        'telegram_number',
+        'delivery_type'
+    ];
+
+    public function setLogoImageAttribute($value)
+    {
         $this->attributes['logo_image'] = $this->uploadFile($value, 'images/products', $this->attributes['logo_image'] ?? "");
     }
 
-    public function setCoverImageAttribute($value){
+    public function setCoverImageAttribute($value)
+    {
         $this->attributes['cover_image'] = $this->uploadFile($value, 'images/products', $this->attributes['cover_image'] ?? "");
     }
 
@@ -48,5 +59,4 @@ class Store extends Model
 
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-
 }

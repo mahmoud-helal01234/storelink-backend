@@ -30,7 +30,7 @@ class OTPMail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this->subject('OTP for Storelink')
+        return $this->subject('OTP for ShopRound')
             ->html("
                         <p>Hello,</p>
                         <p>Your One-Time Password (OTP) is: <strong>{$this->otp}</strong></p>

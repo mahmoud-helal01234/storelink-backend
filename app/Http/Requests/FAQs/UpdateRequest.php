@@ -28,10 +28,10 @@ class UpdateRequest extends FormRequest
 
         return [
             'id'                        => 'required|numeric|exists:faqs,id',
-            'question_en'               => 'required|string|max:1000',
-            'question_ar'               => 'required|string|max:1000',
-            'answer_en'                 => 'required|string|max:1000',
-            'answer_ar'                 => 'required|string|max:1000'
+            'question_en'               => 'required|string|max:20000',
+            'question_ar'               => 'required|string|max:20000',
+            'answer_en'                 => 'required|string|max:20000',
+            'answer_ar'                 => 'required|string|max:20000'
         ];
     }
 

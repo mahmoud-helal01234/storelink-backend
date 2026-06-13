@@ -17,15 +17,20 @@ class LanguageMiddleware
     public function handle($request, Closure $next)
     {
         
-        $request->headers->set('Accept-Language', $request->header('Accept-Language') ?? 'en');
+        $lang = $request->header('Accept-Language') ?? 'en';
+        
+        $lang = strtolower(substr(trim(explode(',', explode(';', $lang)[0])[0]), 0, 2));
+
+        $lang =  !in_array($lang, ['en', 'ar']) ? 'en': $lang;
+        
+        $request->headers->set('Accept-Language',$lang);
         
         
-        $lang = $request->headers->get('Accept-Language'); // Get 'lang' from the query parameters
-        
-        if ($lang && in_array($lang, ['en', 'ar'])) {
-            App::setLocale($lang); // Set the application locale
-            session(['locale' => $lang]); // Store locale in session for persistence
-        } 
+        App::setLocale($lang); // Set the application locale
+        session(['locale' => $lang]); // Store locale in session for persistence
+     
+        // if($request->header('api-token') != 'elraghwa-elnakya212')
+        //     return response()->json(null,404);
 
         return $next($request);
     }

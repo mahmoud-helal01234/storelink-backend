@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use App\Http\Services\NotificationsService;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,6 +11,33 @@ use App\Http\Services\NotificationsService;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+// Route::get('/apple-secret', function () {
+//     $teamId = 'FG8275M38P';
+//     $clientId = 'com.storelink.client';
+//     $keyId = 'XSBFGG3FXW';
+
+//     $privateKey = file_get_contents(
+//         storage_path('app/apple/AuthKey_XSBFGG3FXW.p8')
+//     );
+
+//     $payload = [
+//         'iss' => $teamId,
+//         'iat' => time(),
+//         'exp' => time() + (86400 * 180), // 6 months
+//         'aud' => 'https://appleid.apple.com',
+//         'sub' => $clientId,
+//     ];
+
+//     $clientSecret = JWT::encode(
+//         $payload,
+//         $privateKey,
+//         'ES256',
+//         $keyId
+//     );
+
+//     dd($clientSecret);
+// });
 
 Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], function () {
     Route::get('notify', 'NotificationsController@test');
@@ -27,7 +52,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('store/social_login', 'StoresController@socialLogin');
 
     Route::post('forgetPassword', 'AuthController@forgetPassword');
+    Route::post('sendOTP', 'AuthController@sendOTP');
     Route::post('verifyOTP', 'AuthController@verifyOTP');
+    Route::post('deleteMyAccount', 'AuthController@deleteMyAccount');
 
     Route::post('client/social_login', 'ClientsController@socialLogin');
 
@@ -39,9 +66,8 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::get('stores_ads', 'StoreAdsController@get');
 
     Route::group(['middleware' => ['authenticate:admin,store']], function () {
-        
+
         Route::delete('stores_ads/{id}', 'StoreAdsController@delete');
-    
     });
     Route::group(['middleware' => ['authenticate:admin']], function () {
 
@@ -79,7 +105,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
         Route::group(['middleware' => ['profile.completed']], function () {
-            
+
             Route::get('store/my_statistics', 'StoresController@getMyStatistics');
             Route::post('store/me', 'StoresController@me');
 

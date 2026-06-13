@@ -39,21 +39,23 @@ class PromoCodesService
 
         return $promoCode;
     }
-    public function isPromoCodeExpired($promoCode)
-    {
-
-        if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.expired'),statusCode: 404));
-        return true;
-    }
+    
 
     public function validatePromoCode($code)
     {
 
         $promoCode = $this->getByCode($code);
-        $this->isPromoCodeExpired($promoCode);
-        if (!$promoCode->active)
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.inactive'),statusCode: 404));
+        if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.expired'),statusCode: 404));
+        return $promoCode;
+    }
+
+    public function validatePromoCodeById($id)
+    {
+
+        $promoCode = $this->getById($id);
+        if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.expired'),statusCode: 404));
         return $promoCode;
     }
 

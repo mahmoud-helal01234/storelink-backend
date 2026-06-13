@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Client;
-use App\Models\DeviceToken;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Http\Traits\ResponsesTrait;
 use App\Http\Controllers\Controller;
-
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Requests\Auth\DeleteMyAccountRequest;
 use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Services\Users\AuthService;
-use Laravel\Socialite\Facades\Socialite;
-use GuzzleHttp\Exception\ClientException;
+use App\Http\Requests\Auth\OneSignalDeviceIdStoreRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Auth\SendOTPRequest;
 use App\Http\Requests\Auth\VerifyOTPRequest;
-use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Http\Requests\Client\ClientLoginRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
-use App\Http\Requests\Auth\OneSignalDeviceIdStoreRequest;
+use App\Http\Services\Users\AuthService;
+use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Traits\ResponsesTrait;
+use App\Models\Client;
+use App\Models\DeviceToken;
+use App\Models\User;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -163,13 +162,31 @@ class AuthController extends Controller
         return $this->apiResponse(status: true,message: __('success.updated'));
     }
 
+    public function sendOTP(SendOTPRequest $request)
+    {
+
+        $user = $request->validated();
+        $this->authService->sendOTPRequest($user);
+
+        return $this->apiResponse(status: true,message: __('success.otp_sent'));
+    }
+
     public function forgetPassword(SendOTPRequest $request)
     {
 
         $user = $request->validated();
-        $otpToTest = $this->authService->forgetPassword($user);
+        $this->authService->sendOTPRequest($user);
 
-        return $this->apiResponse($otpToTest, true, __('success.otp_sent'));
+        return $this->apiResponse(status: true,message: __('success.otp_sent'));
+    }
+
+    public function deleteMyAccount(DeleteMyAccountRequest $request)
+    {
+
+        $request = $request->validated();
+        $this->authService->deleteMyAccount($request);
+
+        return $this->apiResponse(status: true,message: __('success.account_deleted'));
     }
 
     public function logout()

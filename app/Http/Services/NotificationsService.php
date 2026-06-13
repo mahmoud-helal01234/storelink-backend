@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Http\Traits\ResponsesTrait;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Traits\NotificationTrait;
-use App\Models\DriversApp\Notification;
+use App\Models\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class NotificationsService

@@ -90,6 +90,29 @@ class AuthService
             
     }
 
+    public function deleteMyAccount($request){
+        DB::beginTransaction();
+        $email = $request['email'];
+        $otp = $request['otp'];
+        $ConfirmationCode = ConfirmationCode::where(['email' => $email, 'code' => $otp, 'active' => 1])->get()->first();
+        if($ConfirmationCode == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('invalid otp')));
+        }
+        if($ConfirmationCode->created_at->addMinutes(5)->isPast()){
+            throw new HttpResponseException($this->apiResponse(null, false, __('otp expired')));
+        }   
+
+        $ConfirmationCode->active = 0;
+        $ConfirmationCode->save();
+        $user = User::where('email', $email)->first();
+        if($user == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+
+        $user->delete();
+        DB::commit();
+    }
+
     public function sendOTP($email){
         $otp = rand(100000, 999999);
         ConfirmationCode::updateOrCreate(
@@ -99,9 +122,19 @@ class AuthService
         
         Mail::to($email)
             ->send(new OTPMail($otp));
-        return $otp; // for testing purposes only
+        // return $otp; // for testing purposes only
     }
 
+    public function sendOTPRequest($request){
+        
+        if(User::where('email', $request['email'])->first() == null){
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+        
+        return $this->sendOTP($request['email']);
+            
+    }
+    
     public function forgetPassword($request){
         
         if(User::where('email', $request['email'])->first() == null){
