@@ -87,7 +87,14 @@ class AuthService
         DB::commit();
     
         return $user;
-            
+
+    }
+
+    public function deleteMyAccountAuthenticated(){
+        $userId = $this->getLoggedInUser()->id;
+        $user = User::find($userId);
+        $user->delete();
+        return;
     }
 
     public function deleteMyAccount($request){

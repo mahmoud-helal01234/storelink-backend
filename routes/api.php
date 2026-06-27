@@ -55,6 +55,9 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::post('sendOTP', 'AuthController@sendOTP');
     Route::post('verifyOTP', 'AuthController@verifyOTP');
     Route::post('deleteMyAccount', 'AuthController@deleteMyAccount');
+    
+    Route::delete('deleteMyAccount', 'AuthController@deleteMyAccountAuthenticated');
+
 
     Route::post('client/social_login', 'ClientsController@socialLogin');
 

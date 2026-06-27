@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\DeleteMyAccountAuthenticatedRequest;
 use App\Http\Requests\Auth\DeleteMyAccountRequest;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\OneSignalDeviceIdStoreRequest;
@@ -178,6 +179,12 @@ class AuthController extends Controller
         $this->authService->sendOTPRequest($user);
 
         return $this->apiResponse(status: true,message: __('success.otp_sent'));
+    }
+
+    public function deleteMyAccountAuthenticated(){
+
+        $this->authService->deleteMyAccountAuthenticated();
+        return $this->apiResponse(status: true,message: __('success.account_deleted'));
     }
 
     public function deleteMyAccount(DeleteMyAccountRequest $request)

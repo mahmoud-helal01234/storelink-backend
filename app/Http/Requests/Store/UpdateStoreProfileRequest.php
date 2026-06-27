@@ -44,9 +44,9 @@ class UpdateStoreProfileRequest extends FormRequest
             'name_ar'               => 'required|string|max:100',
             'delivery_charge'       => 'required|string|max:100',
             'first_phone_number'    => 'required|string|max:13',
-            'second_phone_number'   => 'sometimes|string|max:13',
-            'whatsapp_number'       => 'sometimes|string|max:13',
-            'telegram_number'       => 'sometimes|string|max:13',
+            'second_phone_number'   => 'sometimes|nullable|string|max:13',
+            'whatsapp_number'       => 'sometimes|nullable|string|max:13',
+            'telegram_number'       => 'sometimes|nullable|string|max:13',
             'delivery_type'         => ['required', Rule::in(['no_delivery', 'free_delivery', 'based_on_location', 'fixed_price'])]
 
         ];

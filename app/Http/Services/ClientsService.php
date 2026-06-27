@@ -268,7 +268,7 @@ class ClientsService
          
             DB::beginTransaction();
             // 1- create user
-            $user = ["email" => $email, 'name' => $name];
+            $user = ["email" => $email];
             $user['role'] = 'client';
             $user['active'] = 1;
             $user['is_verified'] = 1;
@@ -278,7 +278,7 @@ class ClientsService
             $user = User::create($user);
 
             // 2- create client with user_id
-            $client = ['name' => $name,'user_id' => $user->id];
+            $client = ['name' => $name ?? "User",'user_id' => $user->id];
             Client::create($client);
 
             DB::commit();
