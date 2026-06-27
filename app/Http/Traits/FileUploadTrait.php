@@ -29,17 +29,17 @@ trait FileUploadTrait
 
             $image = $manager->read($file);
 
-            $image->scaleDown(
-                width: 1920,
-                height: 1920
+             $image->scaleDown(
+                width: 512,
+                height: 512
             );
 
             $path = $folder_path . DIRECTORY_SEPARATOR . $file_unique_name;
 
             match ($file_original_extension) {
-                'jpg', 'jpeg' => $image->toJpeg(80)->save($path),
+                'jpg', 'jpeg' => $image->toJpeg(70)->save($path),
                 'png'         => $image->toPng()->save($path),
-                'webp'        => $image->toWebp(80)->save($path),
+                'webp'        => $image->toWebp(70)->save($path),
             };
         } else {
             $file->move($folder_path, $file_unique_name);
