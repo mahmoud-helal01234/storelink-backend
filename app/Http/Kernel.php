@@ -77,6 +77,8 @@ class Kernel extends HttpKernel
         // 'admin' => \App\Http\Middleware\IsAdmin::class,
         'authenticate' =>
         \App\Http\Middleware\IsAuthenticated::class,
+        'authenticate-deactivated' =>
+        \App\Http\Middleware\IsAuthenticatedDeactivated::class,
         'authenticate-client'=>
         \App\Http\Middleware\AuthenticateClient::class,
         'language' => \App\Http\Middleware\LanguageMiddleware::class,

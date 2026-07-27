@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\ResponsesTrait;
 use App\Http\Controllers\Controller;
-use App\Http\Services\StoresService;
-use App\Http\Traits\FileUploadTrait;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\VerifyOTPRequest;
 use App\Http\Requests\Client\StoreRegisterRequest;
 use App\Http\Requests\Store\StoreSocialLoginRequest;
 use App\Http\Requests\Store\UpdateStoreProfileRequest;
+use App\Http\Services\StoresService;
+use App\Http\Traits\FileUploadTrait;
+use App\Http\Traits\ResponsesTrait;
 
 class StoresController extends Controller
 {
@@ -30,8 +31,6 @@ class StoresController extends Controller
         $user = $request->validated();
         $response = $this->storesService->socialLogin($user);
         return $this->apiResponse($response, true, __('success.login'));
-        
-       
     }
 
     public function me()
@@ -40,25 +39,32 @@ class StoresController extends Controller
         $client = $this->storesService->me();
         return $this->apiResponse($client);
     }
-    
+
     public function updateProfile(UpdateStoreProfileRequest $request)
     {
 
         $store = $request->validated();
         $this->storesService->updateProfile($store);
 
-        return $this->apiResponse(status: true,message: __('success.updated'));
+        return $this->apiResponse(status: true, message: __('success.updated'));
     }
-    
+
+    public function verifyOTP(VerifyOTPRequest $request)
+    {
+
+        $user = $this->storesService->verifyOTP($request->validated());
+        return $this->apiResponse($user);
+    }
+
 
     public function login(LoginRequest $request)
     {
 
         $user = $request->validated();
         $LoggedInUser = $this->storesService->login($user);
-        return $this->apiResponse($LoggedInUser,true,__('success.login'));
+        return $this->apiResponse($LoggedInUser, true, __('success.login'));
     }
-    
+
     public function register(StoreRegisterRequest $request)
     {
 
@@ -71,7 +77,7 @@ class StoresController extends Controller
     public function get()
     {
 
-        $store = $this->storesService->get(categoryId:request('category_id'), rating:request('rating'),sortByRating:request('sort_by_rating'),distanceInMeters:request('distance_in_meters'));
+        $store = $this->storesService->get(categoryId: request('category_id'), rating: request('rating'), sortByRating: request('sort_by_rating'), distanceInMeters: request('distance_in_meters'));
         return $this->apiResponse($store);
     }
 
@@ -102,11 +108,11 @@ class StoresController extends Controller
         $store = $this->storesService->getById($id);
         return $this->apiResponse($store);
     }
-    
+
     public function selectStores()
     {
 
-        $stores = $this->storesService->selectStores(companyId:request('company_id'), haveSubStores:request('have_sub_stores'), parentId:request('parent_id'));
+        $stores = $this->storesService->selectStores(companyId: request('company_id'), haveSubStores: request('have_sub_stores'), parentId: request('parent_id'));
         return $this->apiResponse($stores);
     }
 
@@ -132,7 +138,4 @@ class StoresController extends Controller
         $this->storesService->delete($id);
         return $this->apiResponse(null, true, __('deleted'));
     }
-
 }
-
-

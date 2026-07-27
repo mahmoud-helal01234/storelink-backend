@@ -33,7 +33,14 @@ class ClientRegisterRequest extends FormRequest
         return [
             'name'          => 'required|string|max:100',
             'address'       => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where('role', 'client'),
+            ],
             'phone'         => 'required|string|max:255|unique:clients',
             'password'      => 'required|string|min:6',
             'lat'           => 'required|numeric',
@@ -41,7 +48,7 @@ class ClientRegisterRequest extends FormRequest
         ];
     }
 
-    
+
 
     public function messages(): array
     {

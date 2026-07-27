@@ -29,7 +29,7 @@ class StoresAdsService
         } else if ($this->isLoggedInUserAdmin()) {
             return StoreAd::orderBy('created_at', 'desc')->with('store')
                 ->get();
-        } else if ($this->isLoggedInUserClient()) {
+        } else {
             return StoreAd::whereHas('store', function ($q) {
                 $q->where('active', true);
             })

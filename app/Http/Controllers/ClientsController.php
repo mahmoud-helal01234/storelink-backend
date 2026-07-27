@@ -2,25 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Traits\ResponsesTrait;
 use App\Http\Controllers\Controller;
-
-use Illuminate\Support\Facades\Auth;
-
-use App\Http\Services\ClientsService;
-use Laravel\Socialite\Facades\Socialite;
-use GuzzleHttp\Exception\ClientException;
-use App\Http\Requests\Client\StoreRequest;
-use App\Http\Requests\Client\UpdateRequest;
+use App\Http\Requests\Auth\VerifyOTPRequest;
 use App\Http\Requests\Client\ClientLoginRequest;
-use App\Http\Requests\Client\UpdateProfileRequest;
 use App\Http\Requests\Client\ClientRegisterRequest;
-use App\Http\Requests\Client\ForgetPasswordRequest;
-use App\Http\Requests\Client\ToggleActivationRequest;
 use App\Http\Requests\Client\ClientSocialLoginRequest;
+use App\Http\Requests\Client\ForgetPasswordRequest;
+use App\Http\Requests\Client\StoreRequest;
+use App\Http\Requests\Client\ToggleActivationRequest;
 use App\Http\Requests\Client\UpdateClientProfileRequest;
+use App\Http\Requests\Client\UpdateProfileRequest;
+use App\Http\Requests\Client\UpdateRequest;
+use App\Http\Services\ClientsService;
+use App\Http\Traits\ResponsesTrait;
+use App\Models\User;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
 class ClientsController extends Controller
 {
@@ -46,6 +45,13 @@ class ClientsController extends Controller
 
         $clients = $this->clientsService->get();
         return $this->apiResponse($clients);
+    }
+
+    public function verifyOTP(VerifyOTPRequest $request)
+    {
+
+        $user = $this->clientsService->verifyOTP($request->validated());
+        return $this->apiResponse($user);
     }
 
 

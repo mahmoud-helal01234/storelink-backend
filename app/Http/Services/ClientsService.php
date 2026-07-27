@@ -8,6 +8,7 @@ use App\Http\Traits\ArraySliceTrait;
 use App\Http\Traits\FileUploadTrait;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Models\Client;
+use App\Models\ConfirmationCode;
 use App\Models\Order;
 use App\Models\Review;
 use App\Models\User;
@@ -142,18 +143,55 @@ class ClientsService
 
         $clientId = $this->getLoggedInUser()->id;
         $client = $this->getById($clientId);
-        $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone','name']);
         
+        $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone']);
+        if (isset($request['name']) && $request['name'] != null)
+            $newClient['name'] = $request['name'];
+
         $client->update($newClient);
         
-        $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        $newUser = [];
+        if(isset($request['name']) && $request['name'] != null)
+            $newUser['name'] = $request['name'];
+
+        if(isset($request['email']) && $request['email'] != null)
+            $newUser['email'] = $request['email'];
+
         $newUser['is_profile_completed'] = 1;
+
         if (isset($request['password']) && $request['password'] != null)
             $newUser['password'] = $request['password']; 
         
         $client->user->update($newUser);
     
         return;
+    }
+
+        public function verifyOTP($request){
+        DB::beginTransaction();
+        $email = $request['email'];
+        $otp = $request['otp'];
+        $ConfirmationCode = ConfirmationCode::where(['email' => $email, 'code' => $otp, 'active' => 1])->get()->first();
+        if ($ConfirmationCode == null) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('invalid otp')));
+        }
+        if ($ConfirmationCode->created_at->addMinutes(5)->isPast()) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('otp expired')));
+        }
+
+        $ConfirmationCode->active = 0;
+        $ConfirmationCode->save();
+        $user = User::where('email', $email)->where('role', 'client')->first();
+        $user->is_verified = 1;
+        $user->save();
+        if ($user == null) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+        $token = JWTAuth::fromUser($user);
+        $user['token'] = $token;
+        DB::commit();
+
+        return $user;
     }
 
     public function forgetPasswordEmail($email)

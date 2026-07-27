@@ -4,9 +4,10 @@ namespace App\Http\Requests\Client;
 
 use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Traits\ResponsesTrait;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class UpdateClientProfileRequest extends FormRequest
 {
@@ -31,9 +32,18 @@ class UpdateClientProfileRequest extends FormRequest
     {
 
         return [
-            'name'          => 'required|string|max:100',
+            'name'          => 'sometimes|nullable|string|max:100',
             'address'       => 'required|string|max:255',
-            'email'         => 'required|string|email|max:255|unique:users,email,' . $this->getLoggedInUserClientId(),
+            'email' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where(fn($query) => $query->where('role', 'client'))
+                    ->ignore($this->getLoggedInUserClientId()),
+            ],
             'phone'         => 'required|string|max:255',
             'password'      => 'sometimes|nullable|string|min:6',
             'lat'           => 'required|numeric',
@@ -41,7 +51,7 @@ class UpdateClientProfileRequest extends FormRequest
         ];
     }
 
-    
+
 
     public function messages(): array
     {

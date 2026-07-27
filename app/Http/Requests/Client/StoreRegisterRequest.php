@@ -32,7 +32,14 @@ class StoreRegisterRequest extends FormRequest
     {
 
         return [
-            'email'                 => 'required|string|email|max:255|unique:users',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where('role', 'store'),
+            ],
             'password'              => 'required|string|min:6',
             'lat'                   => 'required|numeric',
             'long'                  => 'required|numeric',
@@ -50,7 +57,7 @@ class StoreRegisterRequest extends FormRequest
         ];
     }
 
-    
+
 
     public function messages(): array
     {

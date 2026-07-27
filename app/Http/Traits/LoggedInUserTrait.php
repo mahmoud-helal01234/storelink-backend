@@ -40,18 +40,24 @@ use ResponsesTrait;
     public function isLoggedInUserStore(){
 
         $loggedInUser = $this->getLoggedInUser();
+        if($loggedInUser == null)
+            return false;
         return $loggedInUser->role == "store";
     }
 
     public function isLoggedInUserClient(){
 
         $loggedInUser = $this->getLoggedInUser();
+        if($loggedInUser == null)
+            return false;
         return $loggedInUser->role == "client";
     }
 
     public function isLoggedInUserAdmin(){
 
         $loggedInUser = $this->getLoggedInUser();
+        if($loggedInUser == null)
+            return false;
         return $loggedInUser->role == "admin";
     }
 

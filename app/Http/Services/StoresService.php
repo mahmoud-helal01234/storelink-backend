@@ -10,6 +10,7 @@ use App\Http\Traits\FileUploadTrait;
 use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Traits\ResponsesTrait;
 use App\Models\Category;
+use App\Models\ConfirmationCode;
 use App\Models\DriversApp\UserDeviceToken;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -93,6 +94,34 @@ class StoresService
         return;
     }
 
+    public function verifyOTP($request)
+    {
+        DB::beginTransaction();
+        $email = $request['email'];
+        $otp = $request['otp'];
+        $ConfirmationCode = ConfirmationCode::where(['email' => $email, 'code' => $otp, 'active' => 1])->get()->first();
+        if ($ConfirmationCode == null) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('invalid otp')));
+        }
+        if ($ConfirmationCode->created_at->addMinutes(5)->isPast()) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('otp expired')));
+        }
+
+        $ConfirmationCode->active = 0;
+        $ConfirmationCode->save();
+        $user = User::where('email', $email)->where('role', 'store')->first();
+        $user->is_verified = 1;
+        $user->save();
+        if ($user == null) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
+        }
+        $token = JWTAuth::fromUser($user);
+        $user['token'] = $token;
+        DB::commit();
+
+        return $user;
+    }
+
     public function register($request)
     {
 
@@ -125,12 +154,13 @@ class StoresService
         $createdStore = Store::create($store);
 
         // 3- create token for user
-        $credentials =  ['email' => $user['email'], 'password' => $user['password']];
+        $credentials =  ['email' => $user['email'], 'password' => $request['password']];
 
 
         DB::commit();
-        
-        
+
+        $user->token = Auth::guard('authenticate')->attempt($credentials);
+
         return StoreLoginResource::make($user);
     }
 
@@ -147,7 +177,7 @@ class StoresService
         }
 
         $authUser = Auth::guard('authenticate')->user();
-        
+
         if ($authUser->active == 0) {
             throw new HttpResponseException($this->apiResponse(["is_active" => 0], false, __('account not active')));
         }
@@ -226,7 +256,7 @@ class StoresService
                 ->when($rating != null, function ($query) use ($rating) {
                     $query->having('avg_rating', '>=', $rating);
                 })->when($sortByRating, function ($query) {
-                    $query->orderBy('avg_rating', 'asc');
+                    $query->orderBy('avg_rating', 'desc');
                 })
                 ->orderBy('distance', 'asc');
             if ($distanceInMeters != null) {
@@ -237,6 +267,22 @@ class StoresService
         } else if ($this->isLoggedInUserAdmin()) {
 
             $stores = Store::with('user')->get();
+        } else {
+            $stores = Store::whereHas('categories', function ($query) use ($categoryId) {
+                $query->where('categories.id', $categoryId);
+            })
+                ->select('stores.*')
+                ->withAvg(['orders as avg_rating' => function ($query) {
+                    $query->select(DB::raw('COALESCE(AVG(reviews.rating), 0)'))
+                        ->join('reviews', 'orders.id', '=', 'reviews.order_id');
+                }], 'avg_rating')
+                ->when($rating !== null, function ($query) use ($rating) {
+                    $query->having('avg_rating', '>=', $rating);
+                })
+                ->when($sortByRating, function ($query) {
+                    $query->orderBy('avg_rating', 'desc');
+                })
+                ->get();
         }
 
 
@@ -271,9 +317,9 @@ class StoresService
                         ->join('reviews', 'orders.id', '=', 'reviews.order_id');
                 }], 'avg_rating')
                 ->orderBy('distance', 'asc');
-            
+
             $stores = $stores->limit(20)->get();
-        } 
+        }
         return $stores;
     }
 
@@ -305,7 +351,7 @@ class StoresService
                 $query->where('store_id', $storeId)->with('images');
             },
         ])->first();
-        if($store == null){
+        if ($store == null) {
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist')));
         }
         $store->reviews =  Review::join('orders', 'reviews.order_id', '=', 'orders.id')
@@ -318,7 +364,7 @@ class StoresService
                 'clients.name as client_name'
             ])
             ->get();
-            
+
         $store->working_hours = WeekDay::leftJoin('store_working_hours', function ($join) use ($storeId) {
             $join->on('week_days.id', '=', 'store_working_hours.week_day_id')
                 ->where('store_working_hours.store_id', $storeId);
@@ -367,13 +413,14 @@ class StoresService
         return $store;
     }
 
-    public function getMyStatistics(){
+    public function getMyStatistics()
+    {
         $storeId = $this->getLoggedInUserStoreId();
         $categoriesCount = StoreCategory::where('store_id', $storeId)->count();
-        $promoCodesCount = PromoCode::where('store_id',$storeId)->count();
-        $productsCount = Product::where('store_id',$storeId)->count();
-        $activeOrdersCount = Order::where('store_id', $storeId)->whereNot('status', 'in_cart')->whereNot('status', 'returned')->whereNot('status','canceled')->whereNot('status','delivered')->count();
-        
+        $promoCodesCount = PromoCode::where('store_id', $storeId)->count();
+        $productsCount = Product::where('store_id', $storeId)->count();
+        $activeOrdersCount = Order::where('store_id', $storeId)->whereNot('status', 'in_cart')->whereNot('status', 'returned')->whereNot('status', 'canceled')->whereNot('status', 'delivered')->count();
+
         $statuses = OrderStatusesConstant::statuses;
 
         $rawCounts = Order::where('store_id', $storeId)
@@ -396,7 +443,6 @@ class StoresService
             'products_count' => $productsCount,
             'orders_per_status_count' => $ordersPerStatusCount
         ];
-
     }
 
     public function create($store)
@@ -454,11 +500,10 @@ class StoresService
         Product::where('store_id', $storeId)->delete();
         StoreCategory::where('store_id', $storeId)->delete();
         PromoCode::where('store_id', $storeId)->delete();
-        OrderItem::whereHas('order', function($q) use($storeId){
+        OrderItem::whereHas('order', function ($q) use ($storeId) {
             $q->where('store_id', $storeId);
         })->delete();
         Order::where('store_id', $storeId)->delete();
-        
     }
 
     public function deleteChildren($mainStoreId = null)
@@ -478,18 +523,18 @@ class StoresService
 
         $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
         $email = $providerUser->getEmail();
-        
+
         // $email = "store@gmail.com";
 
         // if email not found then register them in the system with complete_data = false
         $user = User::where('email', $email)->first();
 
-        if($user != null && $user->role != 'store'){
+        if ($user != null && $user->role != 'store') {
             throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
         }
-        
-        if($user == null){
-         
+
+        if ($user == null) {
+
             DB::beginTransaction();
             // 1- create user
             $user = ["email" => $email];
@@ -509,12 +554,11 @@ class StoresService
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;
-        }else if($user->is_profile_completed == false){
+        } else if ($user->is_profile_completed == false) {
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;
-
-        }else{
+        } else {
             // login the user
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;

@@ -62,34 +62,6 @@ class AuthService
         return;
     }
 
-    public function verifyOTP($request){
-        DB::beginTransaction();
-        $email = $request['email'];
-        $otp = $request['otp'];
-        $ConfirmationCode = ConfirmationCode::where(['email' => $email, 'code' => $otp, 'active' => 1])->get()->first();
-        if($ConfirmationCode == null){
-            throw new HttpResponseException($this->apiResponse(null, false, __('invalid otp')));
-        }
-        if($ConfirmationCode->created_at->addMinutes(5)->isPast()){
-            throw new HttpResponseException($this->apiResponse(null, false, __('otp expired')));
-        }   
-
-        $ConfirmationCode->active = 0;
-        $ConfirmationCode->save();
-        $user = User::where('email', $email)->first();
-        $user->is_verified = 1;
-        $user->save();
-        if($user == null){
-            throw new HttpResponseException($this->apiResponse(null, false, __('user not found')));
-        }
-        $token = JWTAuth::fromUser($user);
-        $user['token'] = $token;
-        DB::commit();
-    
-        return $user;
-
-    }
-
     public function deleteMyAccountAuthenticated(){
         $userId = $this->getLoggedInUser()->id;
         $user = User::find($userId);

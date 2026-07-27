@@ -50,13 +50,6 @@ class AuthController extends Controller
         return $this->apiResponse($user);
     }
 
-    public function verifyOTP(VerifyOTPRequest $request)
-    {
-
-        $user = $this->authService->verifyOTP($request->validated());
-        return $this->apiResponse($user);
-    }
-
     public function socialLogin(Request $request)
     {
 

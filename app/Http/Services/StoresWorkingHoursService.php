@@ -17,6 +17,9 @@ class StoresWorkingHoursService
     public function get($storeId)
     {
 
+        if( $storeId == null || $storeId == 0 || $this->isLoggedInUserStore())
+            $storeId = $this->getLoggedInUserStoreId();
+
         $storeWorkingHours = WeekDay::leftJoin('store_working_hours', function ($join) use ($storeId) {
             $join->on('week_days.id', '=', 'store_working_hours.week_day_id')
                 ->where('store_working_hours.store_id', $storeId);

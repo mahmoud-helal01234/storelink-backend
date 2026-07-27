@@ -53,9 +53,11 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
     Route::post('forgetPassword', 'AuthController@forgetPassword');
     Route::post('sendOTP', 'AuthController@sendOTP');
-    Route::post('verifyOTP', 'AuthController@verifyOTP');
+    Route::post('client/verifyOTP', 'ClientsController@verifyOTP');
+    Route::post('store/verifyOTP', 'StoresController@verifyOTP');
+
     Route::post('deleteMyAccount', 'AuthController@deleteMyAccount');
-    
+
     Route::delete('deleteMyAccount', 'AuthController@deleteMyAccountAuthenticated');
 
 
@@ -67,6 +69,10 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     Route::get('terms_and_conditions', 'TermsAndConditionsController@get');
     Route::get('privacy_policies', 'PrivacyPoliciesController@get');
     Route::get('stores_ads', 'StoreAdsController@get');
+    Route::get('category', 'CategoriesController@get');
+    Route::get('store', 'StoresController@get');
+    Route::get('store/details', 'StoresController@getDetailsById');
+
 
     Route::group(['middleware' => ['authenticate:admin,store']], function () {
 
@@ -104,9 +110,16 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
     });
 
 
+    Route::group(['middleware' => ['authenticate-deactivated:store']], function () {
+
+        Route::get('store/working_hours/{storeId}', 'StoresWorkingHoursController@get');
+        Route::post('store/working_hours/update', 'StoresWorkingHoursController@update');
+    });
 
     // start store only routes
     Route::group(['middleware' => ['authenticate:store']], function () {
+
+
         Route::group(['middleware' => ['profile.completed']], function () {
 
             Route::get('store/my_statistics', 'StoresController@getMyStatistics');
@@ -128,7 +141,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
             Route::post('order/status', 'OrdersController@changeOrderStatus');
 
-            Route::post('store/working_hours/update', 'StoresWorkingHoursController@update');
 
             Route::post('stores_ads', 'StoreAdsController@create');
             Route::post('stores_ads/update', 'StoreAdsController@update');
@@ -147,14 +159,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
         Route::post('resetPassword', 'AuthController@resetPassword');
 
         Route::post('logout', 'AuthController@logout');
-
-        Route::get('category', 'CategoriesController@get');
-
-        Route::get('store/details', 'StoresController@getDetailsById');
-
-        Route::get('store', 'StoresController@get');
-
-        Route::get('store/working_hours/{storeId}', 'StoresWorkingHoursController@get');
     });
 
     // start client only routes 

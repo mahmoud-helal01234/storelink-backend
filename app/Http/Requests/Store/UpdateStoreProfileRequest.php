@@ -33,7 +33,16 @@ class UpdateStoreProfileRequest extends FormRequest
     {
 
         return [
-            'email'                 => 'required|string|email|max:255|unique:users,email,' . $this->getLoggedInUserStoreId(),
+            'email' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where(fn($query) => $query->where('role', 'store'))
+                    ->ignore($this->getLoggedInUserId()),
+            ],
             'password'              => 'sometimes|string|min:6',
             'lat'                   => 'required|numeric',
             'long'                  => 'required|numeric',
@@ -52,7 +61,7 @@ class UpdateStoreProfileRequest extends FormRequest
         ];
     }
 
-    
+
 
     public function messages(): array
     {
