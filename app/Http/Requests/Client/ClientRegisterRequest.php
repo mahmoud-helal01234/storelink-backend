@@ -38,8 +38,7 @@ class ClientRegisterRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')
-                    ->where('role', 'client'),
+                Rule::unique('users', 'email'),
             ],
             'phone'         => 'required|string|max:255|unique:clients',
             'password'      => 'required|string|min:6',

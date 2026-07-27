@@ -37,8 +37,7 @@ class StoreRegisterRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')
-                    ->where('role', 'store'),
+                Rule::unique('users', 'email'),
             ],
             'password'              => 'required|string|min:6',
             'lat'                   => 'required|numeric',

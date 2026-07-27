@@ -41,7 +41,7 @@ class UpdateClientProfileRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique('users', 'email')
-                    ->where(fn($query) => $query->where('role', 'client'))
+                    // ->where(fn($query) => $query->where('role', 'client'))
                     ->ignore($this->getLoggedInUserClientId()),
             ],
             'phone'         => 'required|string|max:255',
