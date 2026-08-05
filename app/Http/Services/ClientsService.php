@@ -151,17 +151,19 @@ class ClientsService
         $client->update($newClient);
         
         $newUser = [];
-        if(isset($request['name']) && $request['name'] != null)
-            $newUser['name'] = $request['name'];
+        if($client->user->is_social == 0) {
+            if(isset($request['name']) && $request['name'] != null)
+                $newUser['name'] = $request['name'];
 
-        if(isset($request['email']) && $request['email'] != null)
-            $newUser['email'] = $request['email'];
+            if(isset($request['email']) && $request['email'] != null)
+                $newUser['email'] = $request['email'];
 
+        
+            if (isset($request['password']) && $request['password'] != null)
+                $newUser['password'] = $request['password']; 
+        }
         $newUser['is_profile_completed'] = 1;
 
-        if (isset($request['password']) && $request['password'] != null)
-            $newUser['password'] = $request['password']; 
-        
         $client->user->update($newUser);
     
         return;
@@ -308,10 +310,9 @@ class ClientsService
             // 1- create user
             $user = ["email" => $email];
             $user['role'] = 'client';
-            $user['active'] = 1;
+            $user['active'] = 0;
             $user['is_verified'] = 1;
-
-            $user['is_profile_completed'] = 0;
+            $user['is_social'] = 1;
 
             $user = User::create($user);
 

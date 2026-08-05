@@ -32,7 +32,8 @@ class User extends Authenticatable implements JWTSubject
         'active',
         'is_verified',
         'is_profile_completed',
-        'one_signal_device_id'
+        'one_signal_device_id',
+        'is_social'
     ];
 
     /**

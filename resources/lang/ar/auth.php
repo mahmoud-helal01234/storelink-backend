@@ -16,6 +16,11 @@ return [
         'not_authorized' => '.غير مسموح لك بتنفيذ هذا الإجراء',
         'not_belong_to_you' => 'هذا الإجراء ليس لك',
     ],
+    
+    'email_not_active' => 'تم بنجاح! نقوم بتفعيل حسابك',
+    "email_registered_as_store" => "هذا الايميل مستخدم بالفعل كمتجر",
+    "email_registered_as_client" => "هذا الايميل مستخدم بالفعل كعميل",
+
     'failed' => 'These credentials do not match our records.',
     //'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',

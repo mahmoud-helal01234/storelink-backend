@@ -114,6 +114,16 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
         Route::get('store/working_hours/{storeId}', 'StoresWorkingHoursController@get');
         Route::post('store/working_hours/update', 'StoresWorkingHoursController@update');
+        Route::post('store/updateProfile', 'StoresController@updateProfile');
+    
+
+    });
+
+    Route::group(['middleware' => ['authenticate-deactivated:client']], function () {
+
+        Route::post('client/updateProfile', 'ClientsController@updateProfile');
+
+
     });
 
     // start store only routes
@@ -145,7 +155,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('stores_ads', 'StoreAdsController@create');
             Route::post('stores_ads/update', 'StoreAdsController@update');
         });
-        Route::post('store/updateProfile', 'StoresController@updateProfile');
     });
     // end store only routes
 
@@ -174,7 +183,6 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
             Route::post('order/checkout', 'OrdersController@checkOut');
             Route::get('cartDetails', 'OrdersController@getCartDetails');
         });
-        Route::post('client/updateProfile', 'ClientsController@updateProfile');
     });
 
     Route::group(['middleware' => ['authenticate:client,store']], function () {

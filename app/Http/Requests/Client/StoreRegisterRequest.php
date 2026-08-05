@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use App\Http\Constants\FormRequestRulesConstant;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Models\User;
 
 class StoreRegisterRequest extends FormRequest
 {
@@ -37,7 +38,17 @@ class StoreRegisterRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email'),
+                function ($attribute, $value, $fail) {
+                    $user = User::where('email', $value)->first();
+            
+                    if ($user) {
+                        if ($user->role === 'client') {
+                            $fail(__('auth.email_registered_as_client'));
+                        } else {
+                            $fail(__('validation.email.unique'));
+                        }
+                    }
+                },
             ],
             'password'              => 'required|string|min:6',
             'lat'                   => 'required|numeric',

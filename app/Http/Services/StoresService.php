@@ -84,12 +84,14 @@ class StoresService
         $store->update($newStore);
 
         // update user
-        $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+        if($store->user->is_social == 0) {
+            $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+
+            if (isset($request['password']) && $request['password'] != null)
+                $newUser['password'] = $request['password'];
+        }
+        
         $newUser['is_profile_completed'] = 1;
-
-        if (isset($request['password']) && $request['password'] != null)
-            $newUser['password'] = $request['password'];
-
         $store->user->update($newUser);
         return;
     }
@@ -290,7 +292,7 @@ class StoresService
         return $stores;
     }
 
-    public function getNearbyStores()
+    public function getNearbyStores($rating = null, $sortByRating = null)
     {
         Log::info("start get stores");
 
@@ -316,6 +318,12 @@ class StoresService
                     $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
                         ->join('reviews', 'orders.id', '=', 'reviews.order_id');
                 }], 'avg_rating')
+                ->when($rating !== null, function ($query) use ($rating) {
+                    $query->having('avg_rating', '>=', $rating);
+                })
+                ->when($sortByRating, function ($query) {
+                    $query->orderBy('avg_rating', 'desc');
+                })
                 ->orderBy('distance', 'asc');
 
             $stores = $stores->limit(20)->get();
@@ -539,8 +547,9 @@ class StoresService
             // 1- create user
             $user = ["email" => $email];
             $user['role'] = 'store';
-            $user['active'] = 1;
+            $user['active'] = 0;
             $user['is_verified'] = 1;
+            $user['is_social'] = 1;
 
             $user['is_profile_completed'] = 0;
 

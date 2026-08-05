@@ -41,7 +41,7 @@ class UpdateStoreProfileRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')
                     ->where(fn($query) => $query->where('role', 'store'))
-                    ->ignore($this->getLoggedInUserId()),
+                    ->ignore($this->getLoggedInUser()->id),
             ],
             'password'              => 'sometimes|string|min:6',
             'lat'                   => 'required|numeric',

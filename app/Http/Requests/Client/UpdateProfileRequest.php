@@ -39,7 +39,7 @@ class UpdateProfileRequest extends FormRequest
             'id'            => 'required|numeric|exists:clients,id',
             'name'          => 'sometimes|nullable|string|max:255',
             'email'         => 'sometimes|nullable|string|email|max:255|unique:clients,email,'.$clientId,
-            'phone'         => 'sometimes|nullable|string|max:255|unique:clients,phone,'.$clientId,
+            'phone'         => 'sometimes|nullable|string|max:255',
             'country_id'    =>  'sometimes|nullable|exists:countries,id',
             'avatar'        => 'sometimes|nullable|' . FormRequestRulesConstant::ImageValidation,
             'password'      => 'sometimes|nullable|string|min:6',

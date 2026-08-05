@@ -91,7 +91,7 @@ class StoresController extends Controller
     public function getNearbyStores()
     {
 
-        $store = $this->storesService->getNearbyStores();
+        $store = $this->storesService->getNearbyStores(rating: request('rating'), sortByRating: request('sort_by_rating'));
         return $this->apiResponse($store);
     }
 
