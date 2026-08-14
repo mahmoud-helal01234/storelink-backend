@@ -111,7 +111,7 @@ class StoresService
 
         $ConfirmationCode->active = 0;
         $ConfirmationCode->save();
-        $user = User::where('email', $email)->where('role', 'store')->first();
+        $user = User::where('email', $email)->first();
         $user->is_verified = 1;
         $user->save();
         if ($user == null) {

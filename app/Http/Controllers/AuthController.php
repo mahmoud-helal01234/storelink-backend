@@ -138,6 +138,13 @@ class AuthController extends Controller
         return $this->apiResponse($LoggedInUser, true, __('success.login'));
     }
 
+    public function verifyOTP(VerifyOTPRequest $request)
+    {
+
+        $user = $this->authService->verifyOTP($request->validated());
+        return $this->apiResponse($user);
+    }
+
     public function clientRegister(ClientRegisterRequest $request)
     {
 

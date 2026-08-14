@@ -53,8 +53,7 @@ Route::group(['middleware' => ['api'], 'namespace' => 'App\Http\Controllers'], f
 
     Route::post('forgetPassword', 'AuthController@forgetPassword');
     Route::post('sendOTP', 'AuthController@sendOTP');
-    Route::post('client/verifyOTP', 'ClientsController@verifyOTP');
-    Route::post('store/verifyOTP', 'StoresController@verifyOTP');
+    Route::post('verifyOTP', 'AuthController@verifyOTP');
 
     Route::post('deleteMyAccount', 'AuthController@deleteMyAccount');
 
