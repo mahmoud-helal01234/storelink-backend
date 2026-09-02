@@ -293,7 +293,7 @@ class StoresService
         return $stores;
     }
 
-    public function getNearbyStores($rating = null, $sortByRating = null)
+    public function getNearbyStores($rating = null, $sortByRating = null,$categoryId = null)
     {
         Log::info("start get stores");
 
@@ -313,7 +313,11 @@ class StoresService
                     * sin(radians(stores.lat)))))";
 
             // by category id
-            $stores = Store::select('stores.*')
+            $stores = Store:::when($categoryId, function ($query) use ($categoryId) {
+    $query->whereHas('categories', function ($q) use ($categoryId) {
+        $q->where('categories.id', $categoryId);
+    });
+})
             ->where('stores.active', 1)
                 ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
                 ->withAvg(['orders as avg_rating' => function ($query) {
