@@ -250,6 +250,7 @@ class StoresService
                 $q->where('categories.id', $categoryId);
             })
                 ->select('stores.*')
+                ->where('stores.active', 1)
                 ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
                 ->withAvg(['orders as avg_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
@@ -313,6 +314,7 @@ class StoresService
 
             // by category id
             $stores = Store::select('stores.*')
+            ->where('stores.active', 1)
                 ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
                 ->withAvg(['orders as avg_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
@@ -538,7 +540,7 @@ class StoresService
         $user = User::where('email', $email)->first();
 
         if ($user != null && $user->role != 'store') {
-            throw new HttpResponseException($this->apiResponse(null, false, __('unauthorized')));
+            throw new HttpResponseException($this->apiResponse(null, false,__('auth.email_registered_as_client')));   
         }
 
         if ($user == null) {

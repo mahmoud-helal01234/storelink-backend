@@ -304,15 +304,20 @@ class ClientsService
         
         // if email not found then register them in the system with complete_data = false
         $user = User::where('email', $email)->first();
+        if ($user != null && $user->role != 'client') {
+            throw new HttpResponseException($this->apiResponse(null, false,__('auth.email_registered_as_store')));
+            
+        }
         if($user == null){
          
             DB::beginTransaction();
             // 1- create user
             $user = ["email" => $email];
             $user['role'] = 'client';
-            $user['active'] = 0;
+            $user['active'] = 1;
             $user['is_verified'] = 1;
             $user['is_social'] = 1;
+            $user['is_profile_completed'] = 0;
 
             $user = User::create($user);
 
