@@ -17,6 +17,8 @@ use App\Http\Services\PromoCodesService;
 use App\Http\Constants\OrderStatusesConstant;
 use App\Http\enums\DeliveryType;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
+
 
 class OrdersService
 {
@@ -52,7 +54,11 @@ class OrdersService
     public function getCartDetails()
     {
         $order = Order::with(
-            ['items.product', 'store', 'client', 'promoCode']
+            [
+                'items.product.images',
+                'store', 
+                'client', 
+                'promoCode']
         )->where('status', 'in_cart')->where('client_id', $this->getLoggedInUserClientId())->first();
 
         if ($order != null) {
@@ -143,7 +149,7 @@ class OrdersService
     {
 
         $price = 0;
-        $order->load('items.product', 'promoCode', 'store');
+        $order->load('items.product.images', 'promoCode', 'store');
 
         foreach ($order->items as $item) {
 
@@ -212,8 +218,10 @@ class OrdersService
         $order->status = 'pending';
         
         $order->save();
-        $notificationsService = new NotificationsService();
+        Log::info("Sending notification");
 
+        $notificationsService = new NotificationsService();
+        
         $notificationsService->create([
             'user_id' => $order->store_id,
             'order_id' => $order->id,
@@ -265,7 +273,12 @@ class OrdersService
         $this->canClientEditOrder($order);
 
         // validate that it's not used before by this client
-        if (Order::where('client_id', $order->client_id)->where('promo_code_id', $promoCode->id)->WhereNotIn('status',['returned', 'canceled'])->count() > 0)
+        if (
+            Order::where('client_id', $order->client_id)
+        ->where('promo_code_id', $promoCode->id)
+        ->whereNotIn('status', ['returned', 'canceled'])
+        ->exists()
+            )
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.used_before'), statusCode: 404));
 
         $order->promo_code_id = $promoCode->id;
@@ -297,7 +310,7 @@ class OrdersService
             $review = Review::create($data);
         else {
             $review->rating = $data['rating'];
-            $review->review = $data['review'];
+            $review->review = !isset($data['review']) ? null : $data['review'];
             $review->save();
         }
         return;
@@ -314,7 +327,6 @@ class OrdersService
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.invalid_status'), statusCode: 400));
 
         $order->update(['status' => $request['status']]);
-
         // additional logic based on status
         if ($order->status == 'processing') {
             $notification =
@@ -342,19 +354,26 @@ class OrdersService
                 ];
         }
 
-        if (isset($notification)) {
+        try {
+            
+            if (isset($notification)) {
+    
+                $notificationsService = new NotificationsService();
+    
+                $notificationsService->create([
+                    'user_id' => $order->client_id,
+                    'title_en' => $notification['title_en'],
+                    'title_ar' => $notification['title_ar'],
+                    'body_en' => $notification['body_en'],
+                    'body_ar' => $notification['body_ar'],
+                    'order_id' => $order->id
+                ], 'client');
+                
+            }
+        } catch (Exception $ex) {
+            Log::error("couldn't send notification -- change order status for user -> " . $order->store_id);
 
-            $notificationsService = new NotificationsService();
-
-            $notificationsService->create([
-                'user_id' => $order->client_id,
-                'title_en' => $notification['title_en'],
-                'title_ar' => $notification['title_ar'],
-                'body_en' => $notification['body_en'],
-                'body_ar' => $notification['body_ar']
-            ], 'client');
         }
-
         // send notification to all related users
         /*
         $user_ids = [
@@ -386,6 +405,7 @@ class OrdersService
 
         $this->sendNotification($data_send = $notification, $users = $subscribers);
         */
+        
     }
 
 

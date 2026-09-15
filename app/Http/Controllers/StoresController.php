@@ -32,6 +32,13 @@ class StoresController extends Controller
         $response = $this->storesService->socialLogin($user);
         return $this->apiResponse($response, true, __('success.login'));
     }
+    
+    public function mockLogin()
+    {
+
+        $response = $this->storesService->mockLogin();
+        return $this->apiResponse($response, true, __('success.login'));
+    }
 
     public function me()
     {
@@ -91,7 +98,7 @@ class StoresController extends Controller
     public function getNearbyStores()
     {
 
-        $store = $this->storesService->getNearbyStores(rating: request('rating'), sortByRating: request('sort_by_rating'),categoryId: request('category_id'));
+        $store = $this->storesService->getNearbyStores(rating: request('rating'), sortByRating: request('sort_by_rating'), categoryId: request('category_id'));
         return $this->apiResponse($store);
     }
 

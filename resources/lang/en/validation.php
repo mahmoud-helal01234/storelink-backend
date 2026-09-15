@@ -12,6 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
+    'used_before' => 'Used before',
     'not_allowed_to_delete' => 'you are not authorize to delete',
     'same_parent' => 'can not delete same parent',
     'delete_admin' => 'can not delete last Admin',

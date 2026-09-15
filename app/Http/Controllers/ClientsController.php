@@ -134,10 +134,14 @@ class ClientsController extends Controller
         $user = $request->validated();
         $response = $this->clientsService->socialLogin($user);
         return $this->apiResponse($response, true, __('success.login'));
-        
-       
     }
 
+    public function mockLogin()
+    {
+
+        $response = $this->clientsService->mockLogin();
+        return $this->apiResponse($response, true, __('success.login'));
+    }
 
     public function create(StoreRequest $request)
     {

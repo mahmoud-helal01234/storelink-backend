@@ -33,7 +33,7 @@ class NotificationsController extends Controller
             'title_ar' => "تم تقديم طلب جديد " . 2,
             'body_en' => "A new order has been placed by " . "Client Name",
             'body_ar' => "تم تقديم طلب جديد بواسطة " . "client name",
-        ], "client");
+        ], "store");
 
         return $this->apiResponse();
     }

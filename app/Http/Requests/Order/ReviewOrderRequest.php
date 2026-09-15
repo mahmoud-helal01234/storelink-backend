@@ -33,7 +33,7 @@ class ReviewOrderRequest extends FormRequest
         return
             [
                 'order_id' => ['required', 'numeric', 'exists:orders,id,status,delivered'],
-                'review' => ['required', 'string', 'max:500'],
+                'review' => ['sometimes', 'nullable', 'string', 'max:500'],
                 'rating' => ['required', 'numeric', 'min:1', 'max:5']
             ];
     }

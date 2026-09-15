@@ -12,6 +12,7 @@ return [
     | as the size rules. Feel free to tweak each of these messages here.
     |
     */
+    'used_before' => 'تم الاستخدام من قبل',
     'not_allowed_to_delete' => 'غير مسموح لك بالحذف',
     'same_parent' => 'لا يمكن حذف الصنف الاولى',
     'delete_admin' => 'لا يمكن حذف المدير الاخير',

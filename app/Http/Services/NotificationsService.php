@@ -8,6 +8,7 @@ use App\Http\Traits\LoggedInUserTrait;
 use App\Http\Traits\NotificationTrait;
 use App\Models\Notification;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
 
 class NotificationsService
 {
@@ -33,14 +34,17 @@ class NotificationsService
     public function create($notification, $app = "client")
     {
 
-        try {
-
+        
+            
             $createdNotification = Notification::create($notification);
             $oneSignalDeviceId = 
             User::where('id', $notification['user_id'])->first()->one_signal_device_id;
+            Log::info("one signal device id: " . $oneSignalDeviceId);
+        
+            
             if ($oneSignalDeviceId == null)
                 return $createdNotification;
-
+try {
             $this->sendNotification(
                 [
                     "title_ar" => $notification['title_ar'],
@@ -54,10 +58,13 @@ class NotificationsService
                 $app
             );
             return $createdNotification;
-        }
+        
+        
+    }
          catch (\Exception $ex) {
+            Log::error("couldn't send notification");
 
-            throw new HttpResponseException($this->apiResponse(status: false));
+
         }
     }
 

@@ -7,6 +7,7 @@ use App\Models\StoreWorkingHour;
 use App\Http\Traits\ResponsesTrait;
 use App\Http\Traits\LoggedInUserTrait;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Log;
 
 class StoresWorkingHoursService
 {
@@ -24,7 +25,7 @@ class StoresWorkingHoursService
             $join->on('week_days.id', '=', 'store_working_hours.week_day_id')
                 ->where('store_working_hours.store_id', $storeId);
         })
-            ->orderBy('week_days.id')
+            ->orderByRaw('FIELD(week_days.id, 6, 7, 1, 2, 3, 4, 5)')
             ->select(
                 'week_days.*',
                 'store_working_hours.from',
@@ -45,7 +46,7 @@ class StoresWorkingHoursService
 
         // delete existing working hours
         StoreWorkingHour::where('store_id', $storeId)->delete();
-
+        
         // create new working hours
         foreach ($storeWorkingHoursList as $storeWorkingHours) {
             $storeWorkingHours['store_id'] = $storeId;

@@ -294,6 +294,8 @@ class ClientsService
 
     public function socialLogin($data)
     {
+        
+        Log::info("start social login");
 
         $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
         $email = $providerUser->getEmail();
@@ -329,16 +331,29 @@ class ClientsService
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;
-        }else if($user->is_profile_completed == false){
-            $token = Auth::guard('authenticate')->login($user);
-            $user->token = $token;
-            return $user;
-
-        }else{
+        } else {
             // login the user
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;
         }
     }
+    
+    public function mockLogin()
+    {
+        
+        Log::info("start mock login");
+
+        $email = "client@client.com";
+
+        $user = User::where('email', $email)->first();
+
+        // login the user
+        $token = Auth::guard('authenticate')->login($user);
+        
+        $user->token = $token;
+        
+        return $user;
+    }
+
 }

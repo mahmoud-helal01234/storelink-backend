@@ -250,7 +250,9 @@ class StoresService
                 $q->where('categories.id', $categoryId);
             })
                 ->select('stores.*')
-                ->where('stores.active', 1)
+                ->whereHas('user', function ($query) {
+                    $query->where('active', 1);
+                })
                 ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
                 ->withAvg(['orders as avg_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
@@ -293,7 +295,7 @@ class StoresService
         return $stores;
     }
 
-    public function getNearbyStores($rating = null, $sortByRating = null,$categoryId = null)
+    public function getNearbyStores($rating = null, $sortByRating = null ,$categoryId = null)
     {
         Log::info("start get stores");
 
@@ -313,12 +315,14 @@ class StoresService
                     * sin(radians(stores.lat)))))";
 
             // by category id
-            $stores = Store:::when($categoryId, function ($query) use ($categoryId) {
+            $stores = Store::when($categoryId, function ($query) use ($categoryId) {
     $query->whereHas('categories', function ($q) use ($categoryId) {
         $q->where('categories.id', $categoryId);
     });
-})
-            ->where('stores.active', 1)
+})->select('stores.*')
+            ->whereHas('user', function ($query) {
+                $query->where('active', 1);
+            })
                 ->selectRaw("{$haversine} AS distance", [$lat, $long, $lat])
                 ->withAvg(['orders as avg_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(reviews.rating), 0)'))
@@ -331,7 +335,7 @@ class StoresService
                     $query->orderBy('avg_rating', 'desc');
                 })
                 ->orderBy('distance', 'asc');
-
+            
             $stores = $stores->limit(20)->get();
         }
         return $stores;
@@ -544,7 +548,8 @@ class StoresService
         $user = User::where('email', $email)->first();
 
         if ($user != null && $user->role != 'store') {
-            throw new HttpResponseException($this->apiResponse(null, false,__('auth.email_registered_as_client')));   
+            throw new HttpResponseException($this->apiResponse(null, false,__('auth.email_registered_as_client')));
+            
         }
 
         if ($user == null) {
@@ -569,10 +574,6 @@ class StoresService
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;
-        } else if ($user->is_profile_completed == false) {
-            $token = Auth::guard('authenticate')->login($user);
-            $user->token = $token;
-            return $user;
         } else {
             // login the user
             $token = Auth::guard('authenticate')->login($user);
@@ -580,4 +581,22 @@ class StoresService
             return $user;
         }
     }
+    
+    public function mockLogin()
+    {
+        
+        Log::info("start mock login");
+
+        $email = "store@store.com";
+
+        $user = User::where('email', $email)->first();
+
+        // login the user
+        $token = Auth::guard('authenticate')->login($user);
+        
+        $user->token = $token;
+        
+        return $user;
+    }
+
 }
