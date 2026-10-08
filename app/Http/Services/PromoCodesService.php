@@ -46,7 +46,7 @@ class PromoCodesService
 
         $promoCode = $this->getByCode($code);
         if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.expired'),statusCode: 404));
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.promo_code_expired'),statusCode: 404));
         return $promoCode;
     }
 
@@ -55,7 +55,7 @@ class PromoCodesService
 
         $promoCode = $this->getById($id);
         if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.expired'),statusCode: 404));
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.promo_code_expired'),statusCode: 404));
         return $promoCode;
     }
 

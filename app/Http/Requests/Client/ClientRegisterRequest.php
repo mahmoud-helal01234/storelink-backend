@@ -45,7 +45,8 @@ class ClientRegisterRequest extends FormRequest
                     if ($user) {
                         if ($user->role === 'store') {
                             $fail(__('auth.email_registered_as_store'));
-                        } else {
+                        } else if ($user->is_profile_completed != 0) {
+                            // only completed profiles block registration; incomplete ones (e.g. social login) get overwritten
                             $fail(__('validation.email.unique'));
                         }
                     }

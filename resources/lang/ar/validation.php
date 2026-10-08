@@ -13,6 +13,8 @@ return [
     |
     */
     'used_before' => 'تم الاستخدام من قبل',
+    'promo_code_expired' => 'انتهت صلاحية رمز الخصم.',
+    'promo_code_used_before' => 'لقد استخدمت رمز الخصم هذا من قبل.',
     'not_allowed_to_delete' => 'غير مسموح لك بالحذف',
     'same_parent' => 'لا يمكن حذف الصنف الاولى',
     'delete_admin' => 'لا يمكن حذف المدير الاخير',

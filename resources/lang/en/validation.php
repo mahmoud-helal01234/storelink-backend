@@ -13,6 +13,8 @@ return [
     |
     */
     'used_before' => 'Used before',
+    'promo_code_expired' => 'This promo code has expired.',
+    'promo_code_used_before' => 'You have already used this promo code.',
     'not_allowed_to_delete' => 'you are not authorize to delete',
     'same_parent' => 'can not delete same parent',
     'delete_admin' => 'can not delete last Admin',

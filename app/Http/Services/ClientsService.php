@@ -102,14 +102,29 @@ class ClientsService
 
         DB::beginTransaction();
         // 1- create user
-        $user = $this->array_slice_assoc($request, ['email', 'password']);
-        $user['role'] = 'client';
-        $user['active'] = 1;
+        $newUser = $this->array_slice_assoc($request, ['email', 'password']);
+        $newUser['role'] = 'client';
+        $newUser['active'] = 1;
+        $newUser['is_social'] = 0;
+        $newUser['is_profile_completed'] = 1;
 
-        $user = User::create($user);
+        $client = $this->array_slice_assoc($request, ['name', 'address', 'lat', 'long', 'phone']);
+
+        // user registered before (e.g. social login) but didn't complete profile -> overwrite old data
+        $existingUser = User::where('email', $newUser['email'])
+            ->where('role', 'client')
+            ->where('is_profile_completed', 0)
+            ->first();
+
+        if ($existingUser != null) {
+            User::where('id', $existingUser->id)->delete(); 
+            Client::where('user_id', $existingUser->id)->delete();
+            DB::commit();
+        }
+
+        $user = User::create($newUser);
 
         // 2- create client with user_id
-        $client = $this->array_slice_assoc($request, ['name', 'address', 'lat', 'long', 'phone']);
         $client['user_id'] = $user->id;
         Client::create($client);
 

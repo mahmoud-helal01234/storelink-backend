@@ -129,13 +129,27 @@ class StoresService
 
         DB::beginTransaction();
         // 1- create user
-        $user = $this->array_slice_assoc($request, ['email', 'password']);
-        $user['role'] = 'store';
-        $user['active'] = 0;
+        $newUser = $this->array_slice_assoc($request, ['email', 'password']);
+        $newUser['role'] = 'store';
+        $newUser['active'] = 0;
+        $newUser['is_social'] = 0;
+        $newUser['is_profile_completed'] = 1;
 
-        $user = User::create($user);
+        // user registered before (e.g. social login) but didn't complete profile -> overwrite old data
+        $user = User::where('email', $newUser['email'])
+            ->where('role', 'store')
+            ->where('is_profile_completed', 0)
+            ->first();
 
-        // 2- create client with user_id
+        if ($user != null) {
+            User::where('id', $user->id)->delete();
+            Store::where('user_id', $user->id)->delete();
+        } 
+        
+        $user = User::create($newUser);
+        
+
+        // 2- create store with user_id
         $store = $this->array_slice_assoc($request, [
             'name_en',
             'name_ar',

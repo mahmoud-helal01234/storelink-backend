@@ -279,7 +279,7 @@ class OrdersService
         ->whereNotIn('status', ['returned', 'canceled'])
         ->exists()
             )
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.used_before'), statusCode: 404));
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.promo_code_used_before'), statusCode: 404));
 
         $order->promo_code_id = $promoCode->id;
         $order->save();
@@ -322,9 +322,11 @@ class OrdersService
 
         $order = $this->getById($request['order_id']);
         if ($this->getLoggedInUserStoreId() != $order->store_id)
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
+            throw new HttpResponseException(
+        $this->apiResponse(null, false, __('validation.not_authorized'), statusCode: 403));
         if (!in_array($request['status'], OrderStatusesConstant::statuses))
-            throw new HttpResponseException($this->apiResponse(null, false, __('validation.invalid_status'), statusCode: 400));
+            throw new HttpResponseException(
+        $this->apiResponse(null, false, __('validation.invalid_status'), statusCode: 400));
 
         $order->update(['status' => $request['status']]);
         // additional logic based on status
@@ -352,7 +354,23 @@ class OrdersService
                     'body_ar' => "تم توصيل طلبك بنجاح",
                     'body_en' => "Your order has been delivered successfully",
                 ];
-        }
+        } else if ($order->status == 'canceled') {
+            $notification =
+                [
+                    'title_ar' => "تم إلغاء الطلب رقم " . $order->id,
+                    'title_en' => "Order Canceled #" . $order->id,
+                    'body_ar' => "تم إلغاء طلبك",
+                    'body_en' => "Your order has been canceled",
+                ];
+        } else if ($order->status == 'returned') {
+            $notification =
+                [
+                    'title_ar' => "تم إرجاع الطلب رقم " . $order->id,
+                    'title_en' => "Order Returned #" . $order->id,
+                    'body_ar' => "تم إرجاع طلبك",
+                    'body_en' => "Your order has been returned",
+                ];
+        } 
 
         try {
             
