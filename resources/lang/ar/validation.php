@@ -18,6 +18,7 @@ return [
     'not_allowed_to_delete' => 'غير مسموح لك بالحذف',
     'same_parent' => 'لا يمكن حذف الصنف الاولى',
     'delete_admin' => 'لا يمكن حذف المدير الاخير',
+    'admin_cannot_delete' => 'لا يمكن حذف حسابات المديرين.',
     'feedback' => 'هذا التقرير لا يمكن تعديله',
     'cannot_move_to_this_status'=> 'لا يمكن الانتقال لهذه الحالة',
     'cannot_delete' => 'لا يمكن الحذف  ',

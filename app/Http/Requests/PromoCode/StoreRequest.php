@@ -6,10 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Traits\ResponsesTrait;
+use App\Http\Traits\LoggedInUserTrait;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
     use ResponsesTrait;
+    use LoggedInUserTrait;
 
     // protected $stopOnFirstFailure = true;
 
@@ -35,7 +38,7 @@ class StoreRequest extends FormRequest
 
         return [
 
-            'code'          =>  'required|string|max:20|unique:promo_codes,code',
+            'code'          =>  ['required', 'string', 'max:20', Rule::unique('promo_codes', 'code')->where('store_id', $this->getLoggedInUserStoreId())],
             'value'         =>  'required|numeric',
             'discount_type'	=>  'required|in:percentage,constant',
             'expiration_datetime' => 'required|date_format:Y-m-d H:i:s'

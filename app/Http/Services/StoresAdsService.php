@@ -30,7 +30,7 @@ class StoresAdsService
             return StoreAd::orderBy('created_at', 'desc')->with('store')
                 ->get();
         } else {
-            return StoreAd::whereHas('store', function ($q) {
+            return StoreAd::where('active', 1)->whereHas('store.user', function ($q) {
                 $q->where('active', true);
             })
                 ->orderBy('created_at', 'desc')

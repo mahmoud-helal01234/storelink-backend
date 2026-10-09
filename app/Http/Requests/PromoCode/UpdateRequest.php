@@ -6,11 +6,15 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Traits\ResponsesTrait;
+use App\Http\Traits\LoggedInUserTrait;
+use App\Models\PromoCode;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
 {
 
     use ResponsesTrait;
+    use LoggedInUserTrait;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -30,11 +34,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        $storeId = $this->getLoggedInUserStoreId();
+        $promoCode = PromoCode::where('store_id', $storeId)->find($this->input('id'));
 
         return [
 
             'id'            =>  'required|exists:promo_codes,id',
-            'code'          =>  'required|string|max:20|unique:promo_codes,code,'.request('id'),
+            'code'          =>  ['required', 'string', 'max:20', Rule::unique('promo_codes', 'code')->where('store_id', $storeId)->ignore($promoCode)],
             'value'         =>  'required|numeric',
             'discount_type'    =>  'required|in:percentage,constant',
             'expiration_datetime' => 'required|date_format:Y-m-d H:i:s'

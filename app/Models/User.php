@@ -9,6 +9,7 @@ use App\Models\CountryManager;
 use Laravel\Sanctum\HasApiTokens;
 use App\Http\Traits\ResponsesTrait;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -92,8 +93,9 @@ class User extends Authenticatable implements JWTSubject
         parent::boot();
 
         static::deleting(function ($data) {
-
-            $data->id;
+            if ($data->getRawOriginal('role') === 'admin') {
+                throw new HttpResponseException($data->apiResponse(null, false, __('validation.admin_cannot_delete'), 403));
+            }
             // invalidate tokens for user id
         });
     }

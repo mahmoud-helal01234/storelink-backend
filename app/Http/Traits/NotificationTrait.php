@@ -7,13 +7,16 @@ trait NotificationTrait
 
       function sendNotification($data_send=array(),$users=array(),$app = "client"){
         if ($app == "store") { 
-            $appId = env('STORE_OS_APP_ID');
-            $token = env('STORE_OS_TOKEN'); 
+            $appId = config('services.onesignal.store.app_id');
+            $token = config('services.onesignal.store.token');
         } elseif ($app == "client") { 
-            $appId = env('CLIENT_OS_APP_ID'); 
-            $token = env('CLIENT_OS_TOKEN'); 
+            $appId = config('services.onesignal.client.app_id');
+            $token = config('services.onesignal.client.token');
         } else { 
             return response()->json([ 'error' => 'Invalid app type' ], 400); 
+        }
+        if (!$appId || !$token) {
+            throw new \RuntimeException('OneSignal credentials are missing for the '.$app.' app.');
         }
         
         $content =
@@ -33,7 +36,7 @@ trait NotificationTrait
             'app_id' => $appId,
             'data' => $data_send,
             'isAndroid' => true,
-            'isIos' => false, // set to true after ios creation
+            'isIos' => true,
             'content_available' => true,
             'small_icon'    => 'ic_launcher-web',
             //'large_icon' =>"ic_launcher_round.png",
@@ -46,28 +49,26 @@ trait NotificationTrait
             $fields['included_segments']=array('All');
         } else
         {
-            $fields['include_player_ids'] = $users;
+            $fields['include_subscription_ids'] = $users;
         }
 
-        $fields = json_encode($fields);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://api.onesignal.com/notifications");
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json; charset=utf-8',
-            'Authorization: key '. $token
-        ));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_POST, TRUE);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'Authorization' => 'Key '.$token,
+        ])->acceptJson()->connectTimeout(5)->timeout(15)
+            ->post('https://api.onesignal.com/notifications', $fields);
 
-        $response = curl_exec($ch);
-                // var_dump($response);
+        $result = $response->json();
+        if (!$response->successful() || empty($result['id'])) {
+            \Illuminate\Support\Facades\Log::error('OneSignal rejected notification', [
+                'app' => $app,
+                'order_id' => $data_send['order_id'] ?? null,
+                'status' => $response->status(),
+                'errors' => $result['errors'] ?? null,
+            ]);
+            throw new \RuntimeException('OneSignal did not accept the notification.');
+        }
 
-        curl_close($ch);
-
-        return $response;
+        return $response->body();
     }
 
     // function sendAdminNotification($data_send=array(),$users=array()){

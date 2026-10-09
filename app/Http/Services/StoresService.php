@@ -590,6 +590,8 @@ class StoresService
             return $user;
         } else {
             // login the user
+            $user->is_verified = 1;
+            $user->save();
             $token = Auth::guard('authenticate')->login($user);
             $user->token = $token;
             return $user;

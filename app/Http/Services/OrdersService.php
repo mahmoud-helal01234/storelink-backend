@@ -262,15 +262,13 @@ class OrdersService
         // validate it's not expired 
         $promoCodesService = new PromoCodesService();
 
-        $promoCode = $promoCodesService->validatePromoCode($addedPromoCode['promo_code']);
-
         // validate it's corresponding to same order's store and for logged in client
         $order = $this->getById($addedPromoCode['order_id']);
+        $this->canClientEditOrder($order);
+        $promoCode = $promoCodesService->validatePromoCode($addedPromoCode['promo_code'], $order->store_id);
 
         if ($order->store_id != $promoCode->store_id)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist'), statusCode: 404));
-
-        $this->canClientEditOrder($order);
 
         // validate that it's not used before by this client
         if (

@@ -18,6 +18,7 @@ return [
     'not_allowed_to_delete' => 'you are not authorize to delete',
     'same_parent' => 'can not delete same parent',
     'delete_admin' => 'can not delete last Admin',
+    'admin_cannot_delete' => 'Admin accounts cannot be deleted.',
     'feedback' => 'its not your feedback',
     'cannot_move_to_this_status'=> 'Cannot move to this status',
     'cannot_delete' => 'can not delete',

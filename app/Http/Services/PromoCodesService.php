@@ -29,10 +29,11 @@ class PromoCodesService
     }
 
 
-    public function getByCode($code)
+    public function getByCode($code, $storeId = null)
     {
 
-        $promoCode = PromoCode::where('code', $code)->get()->first();
+        $storeId = $storeId ?? $this->getLoggedInUserStoreId();
+        $promoCode = PromoCode::where('code', $code)->where('store_id', $storeId)->first();
 
         if ($promoCode == null)
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.not_exist'),statusCode: 404));
@@ -41,10 +42,10 @@ class PromoCodesService
     }
     
 
-    public function validatePromoCode($code)
+    public function validatePromoCode($code, $storeId = null)
     {
 
-        $promoCode = $this->getByCode($code);
+        $promoCode = $this->getByCode($code, $storeId);
         if (Carbon::parse($promoCode->expiration_datetime)->lt(now()))
             throw new HttpResponseException($this->apiResponse(null, false, __('validation.promo_code_expired'),statusCode: 404));
         return $promoCode;

@@ -78,7 +78,7 @@ class StoresController extends Controller
         $user = $request->validated();
         $CreatedUser = $this->storesService->register($user);
 
-        return $this->apiResponse($CreatedUser, true, __('success.login'));
+        return $this->apiResponse($CreatedUser, true, __('success.register'));
     }
 
     public function get()

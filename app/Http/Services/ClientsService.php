@@ -322,8 +322,8 @@ class ClientsService
         // if email not found then register them in the system with complete_data = false
         $user = User::where('email', $email)->first();
         if ($user != null && $user->role != 'client') {
+
             throw new HttpResponseException($this->apiResponse(null, false,__('auth.email_registered_as_store')));
-            
         }
         if($user == null){
          
@@ -348,7 +348,10 @@ class ClientsService
             return $user;
         } else {
             // login the user
+            $user->is_verified = 1;
+            $user->save();
             $token = Auth::guard('authenticate')->login($user);
+
             $user->token = $token;
             return $user;
         }

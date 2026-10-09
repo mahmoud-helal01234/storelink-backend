@@ -32,8 +32,8 @@ class AdminsService extends UsersService {
 
     public function delete($id,$forExtenstionReasons = null){
 
-        if(User::where('role','admin')->count() == 1){
-            throw new HttpResponseException($this->apiResponse(status:false,message:__('validations.delete_admin')));;
+        if ($this->getById($id)->role === 'admin') {
+            throw new HttpResponseException($this->apiResponse(status: false, message: __('validation.admin_cannot_delete'), statusCode: 403));
         }
         parent::delete($id,false);
     }

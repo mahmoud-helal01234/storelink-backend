@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'onesignal' => [
+        'store' => ['app_id' => env('STORE_OS_APP_ID'), 'token' => env('STORE_OS_TOKEN')],
+        'client' => ['app_id' => env('CLIENT_OS_APP_ID'), 'token' => env('CLIENT_OS_TOKEN')],
+    ],
 
     /*
     |--------------------------------------------------------------------------

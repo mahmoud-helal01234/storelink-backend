@@ -38,12 +38,17 @@ class NotificationsService
             
             $createdNotification = Notification::create($notification);
             $oneSignalDeviceId = 
-            User::where('id', $notification['user_id'])->first()->one_signal_device_id;
-            Log::info("one signal device id: " . $oneSignalDeviceId);
+            User::where('id', $notification['user_id'])->value('one_signal_device_id');
         
             
-            if ($oneSignalDeviceId == null)
+            if (empty($oneSignalDeviceId)) {
+                Log::warning('Push notification skipped: user has no OneSignal subscription', [
+                    'user_id' => $notification['user_id'],
+                    'order_id' => $notification['order_id'] ?? null,
+                    'app' => $app,
+                ]);
                 return $createdNotification;
+            }
 try {
             $this->sendNotification(
                 [
@@ -62,7 +67,13 @@ try {
         
     }
          catch (\Exception $ex) {
-            Log::error("couldn't send notification");
+            Log::error("couldn't send notification", [
+                'user_id' => $notification['user_id'],
+                'order_id' => $notification['order_id'] ?? null,
+                'app' => $app,
+                'exception' => get_class($ex),
+            ]);
+            return $createdNotification;
 
 
         }
