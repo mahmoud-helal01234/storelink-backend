@@ -209,6 +209,10 @@ return [
         'required'  =>  'Email is required',
         'email'  =>  'Email is invalid',
         'exists'  =>  'Email is already exist',
+        'unique' => 'Email is already used'
+    ],
+    'mail' => [
+        'unique' => 'Email is already used'
     ],
     'password'=>[
         'required'  =>  'Password is required',
