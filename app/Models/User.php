@@ -28,6 +28,7 @@ class User extends Authenticatable implements JWTSubject
 
         'id',
         'email',
+        'facebook_id',
         'password',
         'role',
         'active',
@@ -43,6 +44,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $hidden = [
+        'facebook_id',
         'password',
         'remember_token'
     ];
@@ -52,6 +54,16 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTIdentifier()
     {
         return $this->getKey();
+    }
+
+    public function attributesToArray()
+    {
+        $attributes = parent::attributesToArray();
+        // Mobile auth models require a string even when Facebook has no email.
+        if (array_key_exists('email', $attributes) && $attributes['email'] === null) {
+            $attributes['email'] = '';
+        }
+        return $attributes;
     }
 
     /**

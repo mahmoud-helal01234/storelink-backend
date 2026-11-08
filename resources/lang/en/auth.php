@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'social_email_required' => 'The sign-in provider did not share an email address. Please allow email access or sign in using another method.',
 
     /*
     |--------------------------------------------------------------------------

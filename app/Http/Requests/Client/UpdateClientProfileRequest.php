@@ -46,6 +46,7 @@ class UpdateClientProfileRequest extends FormRequest
             ],
             'phone'         => 'required|string|max:255',
             'password'      => 'sometimes|nullable|string|min:6',
+            'current_password' => 'required_with:password|string',
             'lat'           => 'required|numeric',
             'long'          => 'required|numeric'
         ];

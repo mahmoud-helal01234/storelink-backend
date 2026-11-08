@@ -7,11 +7,11 @@ trait NotificationTrait
 
       function sendNotification($data_send=array(),$users=array(),$app = "client"){
         if ($app == "store") { 
-            $appId = config('services.onesignal.store.app_id');
-            $token = config('services.onesignal.store.token');
+            $appId = env('STORE_OS_APP_ID');
+            $token = env('STORE_OS_TOKEN');
         } elseif ($app == "client") { 
-            $appId = config('services.onesignal.client.app_id');
-            $token = config('services.onesignal.client.token');
+            $appId = env('CLIENT_OS_APP_ID');
+            $token = env('CLIENT_OS_TOKEN');
         } else { 
             return response()->json([ 'error' => 'Invalid app type' ], 400); 
         }

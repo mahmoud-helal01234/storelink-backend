@@ -26,6 +26,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use stdClass;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -58,6 +59,10 @@ class StoresService
 
         $storeId = $this->getLoggedInUser()->id;
         $store = $this->getById($storeId);
+        if (isset($request['password']) && $request['password'] !== null
+            && !Hash::check($request['current_password'], $store->user->password)) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.current_password')));
+        }
         $newStore = $this->array_slice_assoc($request, [
             'name_en',
             'name_ar',
@@ -84,8 +89,9 @@ class StoresService
         $store->update($newStore);
 
         // update user
+        $newUser = [];
         if($store->user->is_social == 0) {
-            $newUser = $this->array_slice_assoc($request, ['name', 'email']);
+            $newUser = $this->array_slice_assoc($request, ['name']);
 
             if (isset($request['password']) && $request['password'] != null)
                 $newUser['password'] = $request['password'];
@@ -554,7 +560,13 @@ class StoresService
     {
 
         $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        if ($data['provider'] === 'facebook') {
+            return (new FacebookLoginService())->login($providerUser, 'store');
+        }
         $email = $providerUser->getEmail();
+        if (!is_string($email) || trim($email) === '') {
+            throw new HttpResponseException($this->apiResponse(null, false, __('auth.social_email_required'), 422));
+        }
 
         // $email = "store@gmail.com";
 

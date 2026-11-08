@@ -44,6 +44,7 @@ class UpdateStoreProfileRequest extends FormRequest
                     ->ignore($this->getLoggedInUser()->id),
             ],
             'password'              => 'sometimes|string|min:6',
+            'current_password'      => 'required_with:password|string',
             'lat'                   => 'required|numeric',
             'long'                  => 'required|numeric',
             'logo_image'            =>  'sometimes|' . FormRequestRulesConstant::ImageValidation,

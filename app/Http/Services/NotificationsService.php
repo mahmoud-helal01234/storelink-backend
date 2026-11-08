@@ -72,6 +72,7 @@ try {
                 'order_id' => $notification['order_id'] ?? null,
                 'app' => $app,
                 'exception' => get_class($ex),
+                'message' => $ex->getMessage(),
             ]);
             return $createdNotification;
 

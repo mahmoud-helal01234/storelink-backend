@@ -7,6 +7,7 @@ use App\Http\Services\Users\AuthService;
 use App\Http\Traits\ArraySliceTrait;
 use App\Http\Traits\FileUploadTrait;
 use App\Http\Traits\LoggedInUserTrait;
+use App\Http\Traits\ResponsesTrait;
 use App\Models\Client;
 use App\Models\ConfirmationCode;
 use App\Models\Order;
@@ -16,6 +17,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -27,6 +29,7 @@ class ClientsService
     use FileUploadTrait;
     use ArraySliceTrait;
     use LoggedInUserTrait;
+    use ResponsesTrait;
 
     public function me()
     {
@@ -158,6 +161,11 @@ class ClientsService
 
         $clientId = $this->getLoggedInUser()->id;
         $client = $this->getById($clientId);
+
+        if (isset($request['password']) && $request['password'] !== null
+            && !Hash::check($request['current_password'], $client->user->password)) {
+            throw new HttpResponseException($this->apiResponse(null, false, __('validation.current_password')));
+        }
         
         $newClient = $this->array_slice_assoc($request, ['address', 'lat', 'long', 'phone']);
         if (isset($request['name']) && $request['name'] != null)
@@ -169,9 +177,6 @@ class ClientsService
         if($client->user->is_social == 0) {
             if(isset($request['name']) && $request['name'] != null)
                 $newUser['name'] = $request['name'];
-
-            if(isset($request['email']) && $request['email'] != null)
-                $newUser['email'] = $request['email'];
 
         
             if (isset($request['password']) && $request['password'] != null)
@@ -313,7 +318,13 @@ class ClientsService
         Log::info("start social login");
 
         $providerUser = Socialite::driver($data['provider'])->stateless()->userFromToken($data['access_token']);
+        if ($data['provider'] === 'facebook') {
+            return (new FacebookLoginService())->login($providerUser, 'client');
+        }
         $email = $providerUser->getEmail();
+        if (!is_string($email) || trim($email) === '') {
+            throw new HttpResponseException($this->apiResponse(null, false, __('auth.social_email_required'), 422));
+        }
         $name = $providerUser->getName();
         
         // $email = "client@gmail.com";
